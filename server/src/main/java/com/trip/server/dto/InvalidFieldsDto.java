@@ -11,7 +11,8 @@ import lombok.*;
 public class InvalidFieldsDto {
 
     @Schema(
-        description = "Описание ошибки"
+        description = "Описание ошибки",
+        example = "Некоторые поля не прошли валидацию"
     )
     private String message;
 

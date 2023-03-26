@@ -32,7 +32,12 @@ public class SecurityController extends ApiController {
     @ApiResponses(value = {
         @ApiResponse(
             responseCode = "201",
-            description = "CREATED"
+            description = "Пользователь успешно создан"
+        ),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Некоторые поля не прошли валидацию",
+            content = @Content(schema = @Schema(implementation = InvalidFieldsDto.class))
         ),
         @ApiResponse(
             responseCode = "422",
@@ -54,7 +59,12 @@ public class SecurityController extends ApiController {
     @ApiResponses(value = {
         @ApiResponse(
             responseCode = "200",
-            description = "ОК"
+            description = "Пользователь успешно аутентифицирован"
+        ),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Некоторые поля не прошли валидацию",
+            content = @Content(schema = @Schema(implementation = InvalidFieldsDto.class))
         ),
         @ApiResponse(
             responseCode = "401",
@@ -75,7 +85,12 @@ public class SecurityController extends ApiController {
     @ApiResponses(value = {
         @ApiResponse(
             responseCode = "200",
-            description = "ОК"
+            description = "Access и refresh токены успешно обновлены"
+        ),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Некоторые поля не прошли валидацию",
+            content = @Content(schema = @Schema(implementation = InvalidFieldsDto.class))
         ),
         @ApiResponse(
             responseCode = "401",

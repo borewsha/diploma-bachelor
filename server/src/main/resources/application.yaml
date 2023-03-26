@@ -1,0 +1,29 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: ${DATABASE_USERNAME:trip}
+    password: ${DATABASE_PASSWORD:password}
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/trip}
+  jpa:
+    show-sql: ${SPRING_JPA_SHOW_SQL:false}
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
+
+jwt:
+  access:
+    secret: ${JWT_ACCESS_SECRET:kIRCxaV1mMG3FcpoKGg8DtLnUhhAu0FC+PPjFrSo3H7d4BYpFuuXUaOCBB/Law5BnhLXAX/qbsPdvpbNOWuIoA==}
+    session:
+      time-millis: ${JWT_ACCESS_SESSION_TIME_MILLIS:3600000}
+  refresh:
+    secret:
+      ${JWT_REFRESH_SECRET:nQjZqFCjkMPIok9+a1RO+RguMSXmcx9GE8JRg6be7G1YHzKCwrhy+eIC3Q2gg7TDh6dLvdjc7vh6J8ujyWUsSQ==}
+    session:
+      time-millis: ${JWT_REFRESH_SESSION_TIME_MILLIS:2592000000}

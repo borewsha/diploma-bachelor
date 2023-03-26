@@ -1,0 +1,8 @@
+CREATE SEQUENCE IF NOT EXISTS hibernate_sequence START WITH 1 INCREMENT BY 1;
+
+CREATE TABLE user_role
+(
+    id   SERIAL8      NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    CONSTRAINT pk_user_role PRIMARY KEY (id)
+);

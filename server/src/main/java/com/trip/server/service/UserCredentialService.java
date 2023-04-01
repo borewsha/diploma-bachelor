@@ -30,11 +30,12 @@ public class UserCredentialService {
             .orElse(null);
     }
 
-    public void addCredential(User user, String username, String password) {
+    public void addCredential(User user, String username, String password, String fullName) {
         var userCredential = UserCredential.builder()
             .user(user)
             .username(username)
             .password(passwordEncoder.encode(password))
+            .fullName(fullName)
             .build();
         userCredentialRepository.save(userCredential);
     }

@@ -12,11 +12,11 @@ import lombok.*;
 public class RegistrationDto {
 
     @Schema(
-        description = "Имя пользователя",
-        example = "username"
+        description = "Почта пользователя",
+        example = "ivanov@mail.ru"
     )
-    @NotEmpty(message = "Имя пользователя обязательно")
-    private String username;
+    @NotEmpty(message = "Почта пользователя обязательна")
+    private String email;
 
     @Schema(
         description = "Пароль пользователя",
@@ -24,5 +24,12 @@ public class RegistrationDto {
     )
     @NotEmpty(message = "Пароль обязателен")
     private String password;
+
+    @Schema(
+        description = "ФИО пользователя",
+        example = "Иванов Иван"
+    )
+    @NotEmpty(message = "ФИО обязательно")
+    private String fullName;
 
 }

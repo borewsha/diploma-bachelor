@@ -21,6 +21,8 @@ public class UserCredential {
 
     private String password;
 
+    private String fullName;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

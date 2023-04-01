@@ -5,7 +5,7 @@ spring:
   datasource:
     driver-class-name: org.postgresql.Driver
     username: ${DATABASE_USERNAME:trip}
-    password: ${DATABASE_PASSWORD:password}
+    password: ${DATABASE_PASSWORD:trip}
     url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/trip}
   jpa:
     show-sql: ${SPRING_JPA_SHOW_SQL:false}

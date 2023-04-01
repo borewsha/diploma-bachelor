@@ -33,7 +33,7 @@ public class UserService {
         return getById(userId);
     }
 
-    public Long register(String username, String password) {
+    public Long register(String username, String password, String fullName) {
         if (userCredentialService.findByUsername(username) != null) {
             throw new UnprocessableEntityException("Такое имя пользователя уже занято");
         }
@@ -44,7 +44,7 @@ public class UserService {
             .registeredAt(ZonedDateTime.now())
             .build();
         userRepository.save(user);
-        userCredentialService.addCredential(user, username, password);
+        userCredentialService.addCredential(user, username, password, fullName);
 
         return user.getId();
     }

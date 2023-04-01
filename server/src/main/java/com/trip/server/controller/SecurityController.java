@@ -49,7 +49,7 @@ public class SecurityController extends ApiController {
     public ResponseEntity<CreatedDto> registration(
         @Valid @RequestBody RegistrationDto registrationDto
     ) {
-        var userId = userService.register(registrationDto.getUsername(), registrationDto.getPassword());
+        var userId = userService.register(registrationDto.getEmail(), registrationDto.getPassword(), registrationDto.getFullName());
         var userCreatedDto = new CreatedDto(userId);
 
         return new ResponseEntity<>(userCreatedDto, HttpStatus.CREATED);
@@ -76,7 +76,7 @@ public class SecurityController extends ApiController {
     public ResponseEntity<JwtDto> login(
         @Valid @RequestBody LoginDto loginDto
     ) {
-        var jwt = userCredentialService.generateJwt(loginDto.getUsername(), loginDto.getPassword());
+        var jwt = userCredentialService.generateJwt(loginDto.getEmail(), loginDto.getPassword());
         var jwtDto = modelMapper.map(jwt, JwtDto.class);
         return ResponseEntity.ok(jwtDto);
     }

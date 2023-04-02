@@ -1,4 +1,4 @@
-package com.trip.server.entity;
+package com.trip.server.database.entity;
 
 import javax.persistence.*;
 

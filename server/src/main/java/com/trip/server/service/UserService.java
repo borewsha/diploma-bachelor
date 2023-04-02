@@ -2,9 +2,9 @@ package com.trip.server.service;
 
 import java.time.*;
 
-import com.trip.server.entity.*;
+import com.trip.server.database.entity.User;
+import com.trip.server.database.repository.UserRepository;
 import com.trip.server.exception.*;
-import com.trip.server.repository.*;
 import lombok.*;
 import org.springframework.security.core.context.*;
 import org.springframework.stereotype.*;

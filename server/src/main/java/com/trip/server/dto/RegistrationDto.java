@@ -7,7 +7,6 @@ import lombok.*;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @Schema(description = "Данные для регистрации пользователя")
 public class RegistrationDto {
 

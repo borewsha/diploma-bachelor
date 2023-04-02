@@ -17,6 +17,10 @@ spring:
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
 
+overpass:
+  host: ${OVERPASS_HOST:localhost}
+  port: ${OVERPASS_PORT:8082}
+
 jwt:
   access:
     secret: ${JWT_ACCESS_SECRET:kIRCxaV1mMG3FcpoKGg8DtLnUhhAu0FC+PPjFrSo3H7d4BYpFuuXUaOCBB/Law5BnhLXAX/qbsPdvpbNOWuIoA==}

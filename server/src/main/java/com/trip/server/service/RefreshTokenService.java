@@ -1,10 +1,11 @@
 package com.trip.server.service;
 
-import com.trip.server.entity.*;
+import com.trip.server.database.entity.RefreshToken;
+import com.trip.server.database.entity.User;
+import com.trip.server.database.repository.RefreshTokenRepository;
 import com.trip.server.exception.*;
 import com.trip.server.model.*;
 import com.trip.server.provider.*;
-import com.trip.server.repository.*;
 import lombok.*;
 import org.springframework.stereotype.*;
 

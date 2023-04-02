@@ -1,15 +1,14 @@
-package com.trip.server.entity;
+package com.trip.server.database.entity;
 
 import javax.persistence.*;
-
 import lombok.*;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "user_credential")
-public class UserCredential {
+@Entity(name = "user_role")
+public class UserRole {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,14 +16,6 @@ public class UserCredential {
     private Long id;
 
     @Column(nullable = false)
-    private String username;
-
-    private String password;
-
-    private String fullName;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    private String name;
 
 }

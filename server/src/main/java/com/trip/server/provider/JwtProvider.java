@@ -5,7 +5,8 @@ import java.util.*;
 
 import javax.crypto.*;
 
-import com.trip.server.entity.*;
+import com.trip.server.database.entity.User;
+
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.*;
 import io.jsonwebtoken.security.SignatureException;

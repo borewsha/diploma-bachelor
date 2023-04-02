@@ -6,7 +6,7 @@ import java.time.temporal.*;
 import lombok.experimental.*;
 
 @UtilityClass
-public class TimeUtil {
+public final class TimeUtil {
 
     public static String getFormattedZonedDateTime(TemporalAccessor temporalAccessor) {
         return DateTimeFormatter.ISO_INSTANT.format(temporalAccessor);

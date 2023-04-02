@@ -1,8 +1,10 @@
 package com.trip.server.service;
 
-import com.trip.server.entity.*;
+import com.trip.server.database.entity.User;
+import com.trip.server.database.entity.UserRole;
+import com.trip.server.database.repository.UserRoleRepository;
+
 import com.trip.server.exception.*;
-import com.trip.server.repository.*;
 import lombok.*;
 import org.springframework.stereotype.*;
 

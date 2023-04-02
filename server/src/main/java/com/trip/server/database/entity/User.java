@@ -1,4 +1,6 @@
-package com.trip.server.entity;
+package com.trip.server.database.entity;
+
+import java.time.*;
 
 import javax.persistence.*;
 import lombok.*;
@@ -7,8 +9,8 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "user_role")
-public class UserRole {
+@Entity(name = "\"user\"")
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,6 +18,10 @@ public class UserRole {
     private Long id;
 
     @Column(nullable = false)
-    private String name;
+    private ZonedDateTime registeredAt;
+
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private UserRole role;
 
 }

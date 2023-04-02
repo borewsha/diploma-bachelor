@@ -1,16 +1,15 @@
-package com.trip.server.entity;
-
-import java.time.*;
+package com.trip.server.database.entity;
 
 import javax.persistence.*;
+
 import lombok.*;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "\"user\"")
-public class User {
+@Entity(name = "user_credential")
+public class UserCredential {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,10 +17,14 @@ public class User {
     private Long id;
 
     @Column(nullable = false)
-    private ZonedDateTime registeredAt;
+    private String username;
+
+    private String password;
+
+    private String fullName;
 
     @ManyToOne
-    @JoinColumn(name = "role_id")
-    private UserRole role;
+    @JoinColumn(name = "user_id")
+    private User user;
 
 }

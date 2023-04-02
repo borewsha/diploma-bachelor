@@ -1,6 +1,7 @@
-package com.trip.server.repository;
+package com.trip.server.database.repository;
 
-import com.trip.server.entity.*;
+import com.trip.server.database.entity.UserRole;
+
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.*;
 

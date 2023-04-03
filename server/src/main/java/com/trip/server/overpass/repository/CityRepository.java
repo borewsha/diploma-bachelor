@@ -30,7 +30,7 @@ public class CityRepository {
 
     public Page<City> findTop(Pageable pageable) {
         var query = JsonResponseReader.getQueryBuilder()
-                .append("area[place~'city|town'];")
+                .append("node[place~'city|town'];")
                 .append("out;")
                 .toString();
         var response = overpassMapDataApi.query(query, jsonResponseReader);
@@ -44,7 +44,7 @@ public class CityRepository {
 
     public Page<City> findByNameLike(String pattern, Pageable pageable) {
         var query = JsonResponseReader.getQueryBuilder()
-                .append("area[place~'city|town']")
+                .append("node[place~'city|town']")
                 .append("[name~'.*").append(pattern).append(".*',i];")
                 .append("out;")
                 .toString();

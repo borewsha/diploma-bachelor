@@ -1,6 +1,7 @@
 package com.trip.server.overpass.model;
 
 import lombok.Data;
+import org.springframework.lang.Nullable;
 
 import java.util.Collections;
 import java.util.List;
@@ -12,6 +13,12 @@ public class Element {
     private Long id;
 
     private Type type;
+
+    @Nullable
+    private Double lat;
+
+    @Nullable
+    private Double lon;
 
     private List<Long> nodes = Collections.emptyList();
 

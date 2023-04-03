@@ -29,4 +29,18 @@ public class CityDto {
     @Nullable
     private String region;
 
+    @Schema(
+            description = "Широта",
+            example = "43.1150678"
+    )
+    @Nullable
+    private Double lat;
+
+    @Schema(
+            description = "Долгота",
+            example = "131.8855768"
+    )
+    @Nullable
+    private Double lon;
+
 }

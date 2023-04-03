@@ -23,4 +23,10 @@ public class City {
     @Nullable
     private String region;
 
+    @Nullable
+    private Double lat;
+
+    @Nullable
+    private Double lon;
+
 }

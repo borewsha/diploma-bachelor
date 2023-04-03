@@ -14,7 +14,9 @@ public class CityMapper implements Mapper {
             return new City(
                     element.getId(),
                     element.getTags().get("name"),
-                    element.getTags().getOrDefault("addr:region", null)
+                    element.getTags().getOrDefault("addr:region", null),
+                    element.getLat(),
+                    element.getLon()
             );
         });
     }

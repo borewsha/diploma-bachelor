@@ -17,11 +17,13 @@ public class User {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(nullable = false)
-    private ZonedDateTime registeredAt;
-
     @ManyToOne
     @JoinColumn(name = "role_id")
     private UserRole role;
+
+    @Column(nullable = false)
+    private ZonedDateTime registeredAt;
+
+    private String fullName;
 
 }

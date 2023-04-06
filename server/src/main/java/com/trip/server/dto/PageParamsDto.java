@@ -8,6 +8,8 @@ import lombok.*;
 import org.springframework.lang.*;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Schema(description = "Параметры пагинации")
 public class PageParamsDto {
 

@@ -30,24 +30,24 @@ public class SecurityController extends ApiController {
 
     @Operation(summary = "Регистрация")
     @ApiResponses(value = {
-        @ApiResponse(
-            responseCode = "201",
-            description = "Пользователь успешно создан"
-        ),
-        @ApiResponse(
-            responseCode = "400",
-            description = "Некоторые поля не прошли валидацию",
-            content = @Content(schema = @Schema(implementation = InvalidFieldsDto.class))
-        ),
-        @ApiResponse(
-            responseCode = "422",
-            description = "Такое имя пользователя уже занято",
-            content = @Content(schema = @Schema(implementation = ApiErrorDto.class))
-        )
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Пользователь успешно создан"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Некоторые поля не прошли валидацию",
+                    content = @Content(schema = @Schema(implementation = InvalidFieldsDto.class))
+            ),
+            @ApiResponse(
+                    responseCode = "422",
+                    description = "Такое имя пользователя уже занято",
+                    content = @Content(schema = @Schema(implementation = ApiErrorDto.class))
+            )
     })
     @PostMapping("/registration")
     public ResponseEntity<CreatedDto> registration(
-        @Valid @RequestBody RegistrationDto registrationDto
+            @RequestBody @Valid RegistrationDto registrationDto
     ) {
         var userId = userService.register(registrationDto.getEmail(), registrationDto.getPassword(), registrationDto.getFullName());
         var userCreatedDto = new CreatedDto(userId);
@@ -57,24 +57,24 @@ public class SecurityController extends ApiController {
 
     @Operation(summary = "Аутентификация")
     @ApiResponses(value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "Пользователь успешно аутентифицирован"
-        ),
-        @ApiResponse(
-            responseCode = "400",
-            description = "Некоторые поля не прошли валидацию",
-            content = @Content(schema = @Schema(implementation = InvalidFieldsDto.class))
-        ),
-        @ApiResponse(
-            responseCode = "401",
-            description = "Неверный логин или пароль",
-            content = @Content(schema = @Schema(implementation = ApiErrorDto.class))
-        )
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Пользователь успешно аутентифицирован"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Некоторые поля не прошли валидацию",
+                    content = @Content(schema = @Schema(implementation = InvalidFieldsDto.class))
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Неверный логин или пароль",
+                    content = @Content(schema = @Schema(implementation = ApiErrorDto.class))
+            )
     })
     @PostMapping("/login")
     public ResponseEntity<JwtDto> login(
-        @Valid @RequestBody LoginDto loginDto
+            @Valid @RequestBody LoginDto loginDto
     ) {
         var jwt = userCredentialService.generateJwt(loginDto.getEmail(), loginDto.getPassword());
         var jwtDto = modelMapper.map(jwt, JwtDto.class);
@@ -83,24 +83,24 @@ public class SecurityController extends ApiController {
 
     @Operation(summary = "Обновление access и refresh токенов")
     @ApiResponses(value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "Access и refresh токены успешно обновлены"
-        ),
-        @ApiResponse(
-            responseCode = "400",
-            description = "Некоторые поля не прошли валидацию",
-            content = @Content(schema = @Schema(implementation = InvalidFieldsDto.class))
-        ),
-        @ApiResponse(
-            responseCode = "401",
-            description = "Невалидный refresh токен",
-            content = @Content(schema = @Schema(implementation = ApiErrorDto.class))
-        )
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Access и refresh токены успешно обновлены"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Некоторые поля не прошли валидацию",
+                    content = @Content(schema = @Schema(implementation = InvalidFieldsDto.class))
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Невалидный refresh токен",
+                    content = @Content(schema = @Schema(implementation = ApiErrorDto.class))
+            )
     })
     @PostMapping("/refresh")
     public ResponseEntity<JwtDto> updateTokens(
-        @Valid @RequestBody RefreshTokenDto refreshTokenDto
+            @Valid @RequestBody RefreshTokenDto refreshTokenDto
     ) {
         var jwt = refreshTokenService.updateTokens(refreshTokenDto.getRefreshToken());
         var jwtDto = modelMapper.map(jwt, JwtDto.class);

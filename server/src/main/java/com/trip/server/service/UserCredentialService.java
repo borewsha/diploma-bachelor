@@ -22,22 +22,21 @@ public class UserCredentialService {
 
     public UserCredential getByUsername(String username) {
         return userCredentialRepository.findByUsername(username)
-            .orElseThrow(UserCredentialService::getInvalidCredentialsException);
+                .orElseThrow(UserCredentialService::getInvalidCredentialsException);
     }
 
     @Nullable
     public UserCredential findByUsername(String username) {
         return userCredentialRepository.findByUsername(username)
-            .orElse(null);
+                .orElse(null);
     }
 
-    public void addCredential(User user, String username, String password, String fullName) {
+    public void createCredential(User user, String username, String password) {
         var userCredential = UserCredential.builder()
-            .user(user)
-            .username(username)
-            .password(passwordEncoder.encode(password))
-            .fullName(fullName)
-            .build();
+                .user(user)
+                .username(username)
+                .password(passwordEncoder.encode(password))
+                .build();
         userCredentialRepository.save(userCredential);
     }
 

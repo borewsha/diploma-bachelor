@@ -18,17 +18,17 @@ public class UserRoleService {
 
     public UserRole getById(Long id) {
         return userRoleRepository.findById(id)
-            .orElseThrow(UserRoleService::getNotFoundException);
+                .orElseThrow(UserRoleService::getNotFoundException);
     }
 
     public static Boolean isUser(User user) {
         return user.getRole().getId().equals(ROLE_USER.getId()) &&
-               user.getRole().getName().equals(ROLE_USER.getName());
+                user.getRole().getName().equals(ROLE_USER.getName());
     }
 
     public static Boolean isAdmin(User user) {
         return user.getRole().getId().equals(ROLE_ADMIN.getId()) &&
-               user.getRole().getName().equals(ROLE_ADMIN.getName());
+                user.getRole().getName().equals(ROLE_ADMIN.getName());
     }
 
     private static NotFoundException getNotFoundException() {

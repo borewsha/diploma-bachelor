@@ -4,7 +4,6 @@ CREATE TABLE user_credential
     user_id  BIGINT,
     username VARCHAR(255) NOT NULL,
     password VARCHAR(255),
-    full_name VARCHAR(255),
     CONSTRAINT pk_user_credential PRIMARY KEY (id)
 );
 

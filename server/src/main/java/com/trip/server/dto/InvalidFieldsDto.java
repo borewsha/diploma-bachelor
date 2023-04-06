@@ -7,6 +7,7 @@ import lombok.*;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Schema(description = "Ошибки, произошедшие при валидации полей")
 public class InvalidFieldsDto {
 

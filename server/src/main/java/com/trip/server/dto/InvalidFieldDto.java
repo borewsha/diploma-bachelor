@@ -5,6 +5,7 @@ import lombok.*;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Schema(description = "Поле, не прошедшее валидацию, и описание ошибки")
 public class InvalidFieldDto {
 

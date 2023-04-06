@@ -16,15 +16,13 @@ public class UserCredential {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @Column(nullable = false)
     private String username;
 
     private String password;
-
-    private String fullName;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
 
 }

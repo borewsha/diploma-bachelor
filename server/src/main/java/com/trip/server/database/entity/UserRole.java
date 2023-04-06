@@ -1,6 +1,7 @@
 package com.trip.server.database.entity;
 
 import javax.persistence.*;
+
 import lombok.*;
 
 @Data

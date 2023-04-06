@@ -8,6 +8,7 @@ import java.util.List;
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @Schema(description = "Пагинация")
 public class PageDto<T> {
 

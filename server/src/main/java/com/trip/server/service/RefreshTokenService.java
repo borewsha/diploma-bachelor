@@ -26,9 +26,9 @@ public class RefreshTokenService {
 
         var tokens = createTokens(user);
         var refreshToken = RefreshToken.builder()
-            .token(tokens.getRefreshToken())
-            .user(user)
-            .build();
+                .token(tokens.getRefreshToken())
+                .user(user)
+                .build();
         refreshTokenRepository.save(refreshToken);
 
         return tokens;
@@ -39,7 +39,7 @@ public class RefreshTokenService {
             throw getInvalidRefreshTokenException();
         }
         var refreshToken = refreshTokenRepository.findByToken(token)
-            .orElseThrow(RefreshTokenService::getInvalidRefreshTokenException);
+                .orElseThrow(RefreshTokenService::getInvalidRefreshTokenException);
         return updateTokens(refreshToken);
     }
 

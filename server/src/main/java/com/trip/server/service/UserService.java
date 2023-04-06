@@ -23,7 +23,7 @@ public class UserService {
 
     public User getById(Long id) {
         return userRepository.findById(id)
-            .orElseThrow(UserService::getNotFoundException);
+                .orElseThrow(UserService::getNotFoundException);
     }
 
     public User getFromSecurityContextHolder() {
@@ -40,19 +40,19 @@ public class UserService {
 
         var roleUser = userRoleService.getById(ROLE_USER.getId());
         var user = User.builder()
-            .role(roleUser)
-            .registeredAt(ZonedDateTime.now())
-            .build();
+                .role(roleUser)
+                .fullName(fullName)
+                .registeredAt(ZonedDateTime.now())
+                .build();
         userRepository.save(user);
-        userCredentialService.addCredential(user, username, password, fullName);
+        userCredentialService.createCredential(user, username, password);
 
         return user.getId();
     }
 
     /**
-     * @param user Пользователь
+     * @param user  Пользователь
      * @param other Пользователь, относительно которого сравниваются привилегии
-     *
      * @return имеет ли пользователь user более высокие привилегии, чем пользователь other
      */
     public Boolean hasHigherPrivileges(User user, User other) {

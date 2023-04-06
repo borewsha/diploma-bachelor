@@ -7,8 +7,16 @@ import lombok.*;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Schema(description = "Данные для регистрации пользователя")
 public class RegistrationDto {
+
+    @Schema(
+            description = "ФИО пользователя",
+            example = "Иванов Иван"
+    )
+    @NotEmpty(message = "ФИО обязательно")
+    private String fullName;
 
     @Schema(
         description = "Почта пользователя",
@@ -23,12 +31,5 @@ public class RegistrationDto {
     )
     @NotEmpty(message = "Пароль обязателен")
     private String password;
-
-    @Schema(
-        description = "ФИО пользователя",
-        example = "Иванов Иван"
-    )
-    @NotEmpty(message = "ФИО обязательно")
-    private String fullName;
 
 }

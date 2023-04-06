@@ -35,21 +35,21 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
-            .httpBasic().disable()
-            .csrf().disable()
-            .exceptionHandling()
-            .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-            .accessDeniedHandler(jwtAccessDeniedHandler)
-            .and().cors()
-            .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and().authorizeRequests(
-                ar -> ar
-                    .antMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                    .antMatchers(HttpMethod.POST, "/api/registration", "/api/login", "/api/refresh").permitAll()
-                    .antMatchers(HttpMethod.GET, "/api/cities").permitAll()
-                    .anyRequest().authenticated()
-                    .and().addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-            ).build();
+                .httpBasic().disable()
+                .csrf().disable()
+                .exceptionHandling()
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .accessDeniedHandler(jwtAccessDeniedHandler)
+                .and().cors()
+                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and().authorizeRequests(
+                        ar -> ar
+                                .antMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                                .antMatchers(HttpMethod.POST, "/api/registration", "/api/login", "/api/refresh").permitAll()
+                                .antMatchers(HttpMethod.GET, "/api/cities").permitAll()
+                                .anyRequest().authenticated()
+                                .and().addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                ).build();
     }
 
 }

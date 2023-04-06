@@ -1,0 +1,13 @@
+{
+    "extends": [
+        "react-app",
+        "react-app/jest"
+    ],
+    "rules": {
+        "no-console": "warn",
+        "quotes": [
+            "warn",
+            "single"
+        ]
+    }
+}

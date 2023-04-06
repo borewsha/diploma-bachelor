@@ -23,7 +23,7 @@ import javax.validation.Valid;
 @Tag(name = "Cities")
 @RequestMapping("/api/cities")
 @Validated
-public class CitiesController extends ApiController {
+public class CityController extends ApiController {
 
     private final ModelMapper modelMapper;
 

@@ -9,5 +9,5 @@ docker run \
   -e DOWNLOAD_POLY=https://download.geofabrik.de/russia/far-eastern-fed-district.poly \
   -v osm-database:/data/database/ \
   -v osm-tiles:/data/tiles/ \
-  overv/openstreetmap-tile-server \
+  overv/openstreetmap-tile-server:2.3.0 \
   import

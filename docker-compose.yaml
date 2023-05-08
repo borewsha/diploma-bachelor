@@ -1,8 +1,9 @@
 version: '3.9'
 
 services:
-  database:
+  postgres:
     image: postgres:15.2-alpine
+    container_name: postgres
     environment:
       POSTGRES_DB: ${DATABASE_NAME}
       POSTGRES_USER: ${DATABASE_USERNAME}
@@ -12,6 +13,7 @@ services:
       - ${DATABASE_PORT}:5432
   osm-tile-server:
     image: overv/openstreetmap-tile-server:2.3.0
+    container_name: osm_tile_server
     volumes:
       - osm-database:/data/database/
       - osm-tiles:/data/tiles/
@@ -20,20 +22,53 @@ services:
     command: "run"
   osm-overpass:
     image: wiktorn/overpass-api:0.7.56.9
+    container_name: osm_overpass
     ports:
       - ${OSM_OVERPASS_PORT}:80
     volumes:
       - osm-overpass:/db/
     environment:
-      - OVERPASS_MODE=init
-      - OVERPASS_META=yes
-      - OVERPASS_PLANET_URL=http://download.geofabrik.de/russia/far-eastern-fed-district-latest.osm.bz2
-      - OVERPASS_UPDATE_SLEEP=3600
-      - OVERPASS_USE_AREAS=true
-      - OVERPASS_STOP_AFTER_INIT=false
+      OVERPASS_MODE: init
+      OVERPASS_META: yes
+      OVERPASS_PLANET_URL: http://download.geofabrik.de/${REGION}-latest.osm.bz2
+      OVERPASS_UPDATE_SLEEP: 3600
+      OVERPASS_USE_AREAS: true
+      OVERPASS_STOP_AFTER_INIT: false
     healthcheck:
       test: [ "CMD-SHELL", "exit 0" ]
       start_period: 48h
+  osrm-car:
+    image: monogramm/docker-osrm-backend:5.24
+    container_name: osrm_car
+    ports:
+      - ${OSRM_CAR_PORT}:5000
+    volumes:
+      - osrm:/data/
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    environment:
+      OSRM_ALGORITHM: mld
+      OSRM_THREADS: 2
+      OSRM_PORT: 5000
+      OSRM_PROFILE: /opt/car.lua
+      OSRM_MAP_NAME: database-car
+      OSRM_GEOFABRIK_PATH: ${REGION}-latest.osm.pbf
+  osrm-foot:
+    image: monogramm/docker-osrm-backend:5.24
+    container_name: osrm_foot
+    ports:
+      - ${OSRM_FOOT_PORT}:5000
+    volumes:
+      - osrm:/data/
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    environment:
+      OSRM_ALGORITHM: mld
+      OSRM_THREADS: 2
+      OSRM_PORT: 5000
+      OSRM_PROFILE: /opt/foot.lua
+      OSRM_MAP_NAME: database-foot
+      OSRM_GEOFABRIK_PATH: ${REGION}-latest.osm.pbf
 
 volumes:
   osm-database:
@@ -41,4 +76,6 @@ volumes:
   osm-tiles:
     external: true
   osm-overpass:
+    external: true
+  osrm:
     external: true

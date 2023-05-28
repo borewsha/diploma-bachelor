@@ -1,7 +1,7 @@
 package com.trip.server.controller;
 
 import com.trip.server.dto.*;
-import com.trip.server.service.CityService;
+import com.trip.server.service.PlaceService;
 import com.trip.server.util.PageUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -14,26 +14,29 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
-@Validated
-@AllArgsConstructor
 @RestController
-@Tag(name = "Cities")
-@RequestMapping("/api/cities")
-public class CityController extends ApiController {
+@AllArgsConstructor
+@Tag(name = "Places")
+@RequestMapping("/api/places")
+@Validated
+public class PlaceController extends ApiController {
 
     private final ModelMapper modelMapper;
 
-    private final CityService cityService;
+    private final PlaceService placeService;
 
-    @Operation(summary = "Список городов, отсортированный по населению")
+    @Operation(summary = "Список зданий в городе")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Список городов успешно отдан"
+                    description = "Список зданий в городе успешно отдан"
             ),
             @ApiResponse(
                     responseCode = "400",
@@ -41,14 +44,15 @@ public class CityController extends ApiController {
                     content = @Content(schema = @Schema(implementation = InvalidFieldsDto.class))
             )
     })
-    @GetMapping
-    public ResponseEntity<PageDto<CityDto>> getList(
+    @GetMapping("/buildings")
+    public ResponseEntity<PageDto<PlaceDto>> getBuildings(
             @Valid PageParamsDto pageParamsDto,
+            @RequestParam String city,
             @RequestParam(required = false) String search
     ) {
         var pageRequest = PageUtil.request(pageParamsDto);
-        var page = cityService.get(search, pageRequest);
-        var pageDto = PageUtil.toDto(modelMapper, page, CityDto.class);
+        var page = placeService.getBuildings(city, search, pageRequest);
+        var pageDto = PageUtil.toDto(modelMapper, page, PlaceDto.class);
 
         return new ResponseEntity<>(pageDto, HttpStatus.OK);
     }

@@ -20,6 +20,11 @@ spring:
 overpass:
   host: ${OVERPASS_HOST:localhost}
   port: ${OVERPASS_PORT:8082}
+  default-area-tags: ${OVERPASS_DEFAULT_AREA_TAGS:[admin_level=4]}
+
+nominatim:
+  host: ${NOMINATIM_HOST:localhost}
+  port: ${NOMINATIM_PORT:8085}
 
 jwt:
   access:

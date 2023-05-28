@@ -47,6 +47,7 @@ public class SecurityConfiguration {
                                 .antMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                                 .antMatchers(HttpMethod.POST, "/api/registration", "/api/login", "/api/refresh").permitAll()
                                 .antMatchers(HttpMethod.GET, "/api/cities").permitAll()
+                                .antMatchers(HttpMethod.GET, "/api/places/*").permitAll()
                                 .anyRequest().authenticated()
                                 .and().addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 ).build();

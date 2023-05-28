@@ -12,17 +12,22 @@ import static lombok.AccessLevel.PROTECTED;
 @AllArgsConstructor
 @Accessors(chain = true)
 @NoArgsConstructor(access = PROTECTED)
-public class City implements OsmIdentifiable {
+public class Place implements OsmIdentifiable {
 
     private Long osmId;
 
+    private String type;
+
+    @Nullable
     private String name;
 
     @Nullable
-    private String region;
+    private String address;
 
+    @Nullable
     private Double lat;
 
+    @Nullable
     private Double lon;
 
 }

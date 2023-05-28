@@ -1,31 +1,30 @@
 package com.trip.server.database.entity;
 
-import javax.persistence.*;
-
 import com.trip.server.model.Identifiable;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.Type;
+
+import javax.persistence.*;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-@Entity(name = "user_credential")
-public class UserCredential implements Identifiable {
+@Entity(name = "image")
+public class Image implements Identifiable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    @Column(nullable = false)
-    private String username;
-
-    private String password;
+    @Lob
+    @Type(type = "org.hibernate.type.BinaryType")
+    private byte[] content;
 
 }

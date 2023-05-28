@@ -34,8 +34,4 @@ public class JsonResponseReader implements ApiResponseReader<List<Element>> {
         return getElements(inputStream);
     }
 
-    public static StringBuilder getQueryBuilder() {
-        return new StringBuilder().append("[out:json];");
-    }
-
 }

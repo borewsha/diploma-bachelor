@@ -5,7 +5,7 @@ import org.springframework.security.core.*;
 
 @Getter
 @RequiredArgsConstructor
-public enum UserRole implements GrantedAuthority {
+public enum UserRole implements GrantedAuthority, Identifiable {
 
     ROLE_USER(1L, "ROLE_USER"),
     ROLE_ADMIN(2L, "ROLE_ADMIN");

@@ -3,14 +3,18 @@ package com.trip.server.database.entity;
 import java.time.*;
 
 import javax.persistence.*;
+
+import com.trip.server.model.Identifiable;
 import lombok.*;
+import lombok.experimental.Accessors;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Accessors(chain = true)
 @Entity(name = "\"user\"")
-public class User {
+public class User implements Identifiable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

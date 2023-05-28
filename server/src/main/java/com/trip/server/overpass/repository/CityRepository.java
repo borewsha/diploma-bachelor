@@ -2,6 +2,7 @@ package com.trip.server.overpass.repository;
 
 import com.trip.server.overpass.entity.City;
 import com.trip.server.overpass.model.Element;
+import com.trip.server.overpass.query.QueryBuilder;
 import com.trip.server.overpass.reader.JsonResponseReader;
 import com.trip.server.util.PageUtil;
 import de.westnordost.osmapi.overpass.OverpassMapDataApi;
@@ -9,12 +10,12 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
 import java.util.Comparator;
-import java.util.stream.Stream;
+import java.util.Optional;
 
-@Repository
+@Component("overpassCityRepository")
 @RequiredArgsConstructor
 public class CityRepository {
 
@@ -24,16 +25,28 @@ public class CityRepository {
 
     private final ModelMapper modelMapper;
 
+    private final QueryBuilder queryBuilder;
+
     private final Comparator<Element> populationComparator = Comparator.comparing(
             e -> -Integer.parseInt(e.getTags().getOrDefault("population", "0"))
     );
 
+    public Optional<City> findById(Long id) {
+        var query = queryBuilder.json()
+                .node(id)
+                .out();
+        var response = overpassMapDataApi.query(query, jsonResponseReader);
+
+        return response.stream()
+                .map(e -> modelMapper.map(e, City.class))
+                .findFirst();
+    }
+
     public Page<City> findTop(Pageable pageable) {
-        var query = JsonResponseReader.getQueryBuilder()
-                .append("area[admin_level=4];")
-                .append("node[place~'city|town'](area);")
-                .append("out;")
-                .toString();
+        var query = queryBuilder.json()
+                .defaultArea()
+                .node("place~'city|town'")
+                .out();
         var response = overpassMapDataApi.query(query, jsonResponseReader);
         var content = response.stream()
                 .sorted(populationComparator)
@@ -44,11 +57,10 @@ public class CityRepository {
     }
 
     public Page<City> findByNameLike(String pattern, Pageable pageable) {
-        var query = JsonResponseReader.getQueryBuilder()
-                .append("area[admin_level=4];")
-                .append("node[place~'city|town'][name~'.*").append(pattern).append(".*',i](area);")
-                .append("out;")
-                .toString();
+        var query = queryBuilder.json()
+                .defaultArea()
+                .node("place~'city|town'", "name~'.*" + pattern + ".*',i")
+                .out();
         var response = overpassMapDataApi.query(query, jsonResponseReader);
         var content = response.stream()
                 .sorted(populationComparator)

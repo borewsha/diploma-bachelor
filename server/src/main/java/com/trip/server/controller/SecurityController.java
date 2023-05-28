@@ -14,10 +14,10 @@ import org.springframework.http.*;
 import org.springframework.validation.annotation.*;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
-@AllArgsConstructor
-@Tag(name = "Security")
 @Validated
+@AllArgsConstructor
+@RestController
+@Tag(name = "Security")
 public class SecurityController extends ApiController {
 
     private final UserService userService;

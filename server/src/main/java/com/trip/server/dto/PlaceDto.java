@@ -2,44 +2,46 @@ package com.trip.server.dto;
 
 import com.trip.server.model.Identifiable;
 import com.trip.server.model.OsmIdentifiable;
-import io.swagger.v3.oas.annotations.media.*;
-import lombok.*;
-import org.springframework.lang.*;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.lang.Nullable;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor(force = true)
-@Schema(description = "Город")
-public class CityDto implements Identifiable, OsmIdentifiable {
+@Schema(description = "Место")
+public class PlaceDto implements Identifiable, OsmIdentifiable {
 
     @Schema(
-        description = "ID в базе данных приложения",
-        example = "1"
+            description = "ID в базе данных приложения",
+            example = "1"
     )
-    @Nullable
     private Long id;
 
     @Schema(
             description = "Название",
-            example = "Владивосток"
+            example = "Океан"
     )
+    @Nullable
     private String name;
 
     @Schema(
-            description = "Регион",
-            example = "Приморский край"
+            description = "Улица",
+            example = "Набережная улица, 3"
     )
-    private String region;
+    private String address;
 
     @Schema(
             description = "Широта",
-            example = "43.1150678"
+            example = "43.1164693"
     )
     private Double lat;
 
     @Schema(
             description = "Долгота",
-            example = "131.8855768"
+            example = "131.8780963"
     )
     private Double lon;
 
@@ -52,7 +54,7 @@ public class CityDto implements Identifiable, OsmIdentifiable {
 
     @Schema(
             description = "ID в базе данных OSM",
-            example = "23565445"
+            example = "23946365"
     )
     @Nullable
     private Long osmId;

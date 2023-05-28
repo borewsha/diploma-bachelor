@@ -1,5 +1,6 @@
 package com.trip.server.dto;
 
+import com.trip.server.model.Identifiable;
 import io.swagger.v3.oas.annotations.media.*;
 import lombok.*;
 
@@ -7,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor(force = true)
 @Schema(description = "Успешный ответ после создания сущности")
-public class CreatedDto {
+public class CreatedDto implements Identifiable {
 
     @Schema(
         description = "ID сущности",

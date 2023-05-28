@@ -41,8 +41,6 @@ public final class PageUtil {
     }
 
     public static <T> PageImpl<T> paginate(List<T> content, Pageable pageable) {
-        // TODO: наверно когда-нибудь всё же придется написать свою пагинацию
-
         var pageRequest = PageRequest.of(
                 Math.max(0, pageable.getPageNumber() - 1),
                 pageable.getPageSize()
@@ -56,6 +54,10 @@ public final class PageUtil {
         }
 
         return new PageImpl<>(page.getPageList(), pageRequest, content.size());
+    }
+
+    public static <T, T1> Page<T1> mapContent(Page<T> page, List<T1> content) {
+        return new PageImpl<>(content, page.getPageable(), page.getTotalElements());
     }
 
     public static Integer getPage(@Nullable Integer page) {

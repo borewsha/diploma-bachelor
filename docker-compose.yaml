@@ -1,9 +1,9 @@
-version: '3.9'
+version: '3.3'
 
 services:
   postgres:
     image: postgres:15.2-alpine
-    container_name: postgres
+    container_name: trip_postgres
     environment:
       POSTGRES_DB: ${DATABASE_NAME}
       POSTGRES_USER: ${DATABASE_USERNAME}
@@ -13,62 +13,70 @@ services:
       - ${DATABASE_PORT}:5432
   osm-tile-server:
     image: overv/openstreetmap-tile-server:2.3.0
-    container_name: osm_tile_server
+    container_name: trip_osm_tile_server
     volumes:
       - osm-database:/data/database/
       - osm-tiles:/data/tiles/
     ports:
       - ${OSM_TILE_SERVER_PORT}:80
     command: "run"
-  osm-overpass:
+  overpass:
     image: wiktorn/overpass-api:0.7.56.9
-    container_name: osm_overpass
+    container_name: trip_overpass
     ports:
-      - ${OSM_OVERPASS_PORT}:80
+      - ${OVERPASS_PORT}:80
     volumes:
       - osm-overpass:/db/
     environment:
-      OVERPASS_MODE: init
-      OVERPASS_META: yes
-      OVERPASS_PLANET_URL: http://download.geofabrik.de/${REGION}-latest.osm.bz2
-      OVERPASS_UPDATE_SLEEP: 3600
-      OVERPASS_USE_AREAS: true
+      OVERPASS_MODE: ${OVERPASS_MODE}
+      OVERPASS_META: ${OVERPASS_META}
+      OVERPASS_PLANET_URL: http://download.geofabrik.de/${OSM_REGION}-latest.osm.bz2
+      OVERPASS_UPDATE_SLEEP: ${OVERPASS_UPDATE_SLEEP}
+      OVERPASS_USE_AREAS: ${OVERPASS_USE_AREAS}
       OVERPASS_STOP_AFTER_INIT: false
     healthcheck:
-      test: [ "CMD-SHELL", "exit 0" ]
-      start_period: 48h
+      disable: true
   osrm-car:
     image: monogramm/docker-osrm-backend:5.24
-    container_name: osrm_car
+    container_name: trip_osrm_car
     ports:
       - ${OSRM_CAR_PORT}:5000
     volumes:
       - osrm:/data/
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
+      - ./scripts/osrm-entrypoint.bash:/home/osrm/entrypoint.sh
     environment:
-      OSRM_ALGORITHM: mld
-      OSRM_THREADS: 2
       OSRM_PORT: 5000
-      OSRM_PROFILE: /opt/car.lua
-      OSRM_MAP_NAME: database-car
-      OSRM_GEOFABRIK_PATH: ${REGION}-latest.osm.pbf
+      OSRM_ALGORITHM: ${OSRM_ALGORITHM}
+      OSRM_THREADS: ${OSRM_THREADS}
+      OSRM_PROFILE: ${OSRM_CAR_PROFILE}
+      OSRM_MAP_NAME: ${OSRM_CAR_MAP_NAME}
   osrm-foot:
     image: monogramm/docker-osrm-backend:5.24
-    container_name: osrm_foot
+    container_name: trip_osrm_foot
     ports:
       - ${OSRM_FOOT_PORT}:5000
     volumes:
       - osrm:/data/
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
+      - ./scripts/osrm-entrypoint.bash:/home/osrm/entrypoint.sh
     environment:
-      OSRM_ALGORITHM: mld
-      OSRM_THREADS: 2
       OSRM_PORT: 5000
-      OSRM_PROFILE: /opt/foot.lua
-      OSRM_MAP_NAME: database-foot
-      OSRM_GEOFABRIK_PATH: ${REGION}-latest.osm.pbf
+      OSRM_ALGORITHM: ${OSRM_ALGORITHM}
+      OSRM_THREADS: ${OSRM_THREADS}
+      OSRM_PROFILE: ${OSRM_FOOT_PROFILE}
+      OSRM_MAP_NAME: ${OSRM_FOOT_MAP_NAME}
+  nominatim:
+    image: mediagis/nominatim:4.2
+    container_name: trip_nominatim
+    ports:
+      - ${NOMINATIM_PORT}:8080
+    environment:
+      PBF_URL: http://download.geofabrik.de/${OSM_REGION}-latest.osm.pbf
+      THREADS: ${NOMINATIM_THREADS}
+
 
 volumes:
   osm-database:

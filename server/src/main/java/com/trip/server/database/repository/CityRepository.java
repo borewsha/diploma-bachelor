@@ -6,9 +6,12 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CityRepository extends JpaRepository<City, Long> {
+
+    Optional<City> findByOsmId(Long id);
 
     List<City> findByOsmIdIn(Collection<Long> osmIds);
 

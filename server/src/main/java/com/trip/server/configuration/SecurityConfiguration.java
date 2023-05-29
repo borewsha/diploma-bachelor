@@ -42,15 +42,13 @@ public class SecurityConfiguration {
                 .accessDeniedHandler(jwtAccessDeniedHandler)
                 .and().cors()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and().authorizeRequests(
-                        ar -> ar
-                                .antMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                                .antMatchers(HttpMethod.POST, "/api/registration", "/api/login", "/api/refresh").permitAll()
-                                .antMatchers(HttpMethod.GET, "/api/cities").permitAll()
-                                .antMatchers(HttpMethod.GET, "/api/places/*").permitAll()
-                                .anyRequest().authenticated()
-                                .and().addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                ).build();
+                .and().authorizeRequests(ar -> ar
+                        .antMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .antMatchers(HttpMethod.POST, "/api/registration", "/api/login", "/api/refresh").permitAll()
+                        .anyRequest().permitAll() // .authenticated()
+                        .and().addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                )
+                .build();
     }
 
 }

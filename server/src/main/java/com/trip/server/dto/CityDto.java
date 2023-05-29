@@ -20,6 +20,20 @@ public class CityDto implements Identifiable, OsmIdentifiable {
     private Long id;
 
     @Schema(
+            description = "ID изображения в базе данных",
+            example = "2"
+    )
+    @Nullable
+    private Long imageId;
+
+    @Schema(
+            description = "ID в базе данных OSM",
+            example = "23565445"
+    )
+    @Nullable
+    private Long osmId;
+
+    @Schema(
             description = "Название",
             example = "Владивосток"
     )
@@ -42,19 +56,5 @@ public class CityDto implements Identifiable, OsmIdentifiable {
             example = "131.8855768"
     )
     private Double lon;
-
-    @Schema(
-            description = "ID изображения в базе данных",
-            example = "2"
-    )
-    @Nullable
-    private Long imageId;
-
-    @Schema(
-            description = "ID в базе данных OSM",
-            example = "23565445"
-    )
-    @Nullable
-    private Long osmId;
 
 }

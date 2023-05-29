@@ -58,7 +58,7 @@ public class ImageController extends ApiController {
                     content = @Content(schema = @Schema(implementation = ApiErrorDto.class))
             )
     })
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CreatedDto> save(@RequestParam MultipartFile image) {
         try {
             byte[] imageBytes = image.getBytes();

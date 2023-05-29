@@ -21,6 +21,20 @@ public class PlaceDto implements Identifiable, OsmIdentifiable {
     private Long id;
 
     @Schema(
+            description = "ID изображения в базе данных",
+            example = "2"
+    )
+    @Nullable
+    private Long imageId;
+
+    @Schema(
+            description = "ID в базе данных OSM",
+            example = "23946365"
+    )
+    @Nullable
+    private Long osmId;
+
+    @Schema(
             description = "Название",
             example = "Океан"
     )
@@ -44,19 +58,5 @@ public class PlaceDto implements Identifiable, OsmIdentifiable {
             example = "131.8780963"
     )
     private Double lon;
-
-    @Schema(
-            description = "ID изображения в базе данных",
-            example = "2"
-    )
-    @Nullable
-    private Long imageId;
-
-    @Schema(
-            description = "ID в базе данных OSM",
-            example = "23946365"
-    )
-    @Nullable
-    private Long osmId;
 
 }

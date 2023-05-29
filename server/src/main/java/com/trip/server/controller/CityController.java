@@ -1,6 +1,8 @@
 package com.trip.server.controller;
 
 import com.trip.server.dto.*;
+import com.trip.server.model.CityPatch;
+import com.trip.server.model.IdentificationProvider;
 import com.trip.server.service.CityService;
 import com.trip.server.util.PageUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,6 +19,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Map;
 
 @Validated
 @AllArgsConstructor
@@ -42,15 +45,47 @@ public class CityController extends ApiController {
             )
     })
     @GetMapping
-    public ResponseEntity<PageDto<CityDto>> getList(
+    public ResponseEntity<PageDto<CityDto>> getAll(
             @Valid PageParamsDto pageParamsDto,
             @RequestParam(required = false) String search
     ) {
         var pageRequest = PageUtil.request(pageParamsDto);
-        var page = cityService.get(search, pageRequest);
+        var page = cityService.getAll(search, pageRequest);
         var pageDto = PageUtil.toDto(modelMapper, page, CityDto.class);
 
         return new ResponseEntity<>(pageDto, HttpStatus.OK);
+    }
+
+    @Operation(summary = "Обновить данные о городе")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "204",
+                    description = "Данные о городе успешно обновлены"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Некоторые поля не прошли валидацию",
+                    content = @Content(schema = @Schema(implementation = InvalidFieldsDto.class))
+            )
+    })
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            content = @Content(
+                    schema = @Schema(
+                            implementation = CityPatch.class
+                    )
+            )
+    )
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> patch(
+            @PathVariable Long id,
+            @RequestParam(required = false) IdentificationProvider provider,
+            @RequestBody Map<String, Object> body
+    ) {
+        var cityPatch = modelMapper.map(body, CityPatch.class);
+        cityPatch.setImageIdSet(body.containsKey("imageId"));
+        cityService.patch(id, provider, cityPatch);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }

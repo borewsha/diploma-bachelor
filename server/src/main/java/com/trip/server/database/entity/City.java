@@ -1,5 +1,9 @@
 package com.trip.server.database.entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeId;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.trip.server.model.Identifiable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,19 +27,19 @@ public class City implements Identifiable {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @ManyToOne
+    @JoinColumn(name = "image_id")
+    @Nullable
+    private Image image;
+
+    private Long osmId;
+
     private String name;
 
-    @Nullable
     private String region;
 
     private Double lat;
 
     private Double lon;
-
-    @ManyToOne
-    @JoinColumn(name = "image_id")
-    private Image image;
-
-    private Long osmId;
 
 }

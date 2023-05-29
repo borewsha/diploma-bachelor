@@ -24,6 +24,13 @@ public class Place implements Identifiable {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @ManyToOne
+    @JoinColumn(name = "image_id")
+    private Image image;
+
+    @Nullable
+    private Long osmId;
+
     @Enumerated(EnumType.STRING)
     private PlaceType type;
 
@@ -35,12 +42,5 @@ public class Place implements Identifiable {
     private Double lat;
 
     private Double lon;
-
-    @ManyToOne
-    @JoinColumn(name = "image_id")
-    private Image image;
-
-    @Nullable
-    private Long osmId;
 
 }

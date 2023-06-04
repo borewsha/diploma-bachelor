@@ -28,10 +28,10 @@ public class CityDto implements Identifiable, OsmIdentifiable {
 
     @Schema(
             description = "ID в базе данных OSM",
-            example = "23565445"
+            example = "N23565445"
     )
     @Nullable
-    private Long osmId;
+    private String osmId;
 
     @Schema(
             description = "Название",

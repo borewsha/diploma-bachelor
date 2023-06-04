@@ -15,11 +15,14 @@ public class CityMapper implements Mapper {
         modelMapper.createTypeMap(Element.class, com.trip.server.overpass.entity.City.class).setConverter(mappingContext -> {
             var element = mappingContext.getSource();
             return new com.trip.server.overpass.entity.City(
-                    element.getId(),
+                    element.getType().getPrefixedId(element.getId()),
                     element.getTags().get("name"),
                     element.getTags().getOrDefault("addr:region", null),
                     element.getLat(),
-                    element.getLon()
+                    element.getLon(),
+                    Optional.ofNullable(element.getTags().get("population"))
+                            .map(Integer::parseInt)
+                            .orElse(0)
             );
         });
 

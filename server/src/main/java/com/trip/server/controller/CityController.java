@@ -77,7 +77,7 @@ public class CityController extends ApiController {
     )
     @PatchMapping("/{id}")
     public ResponseEntity<?> patch(
-            @PathVariable Long id,
+            @PathVariable String id,
             @RequestParam(required = false) IdentificationProvider provider,
             @RequestBody Map<String, Object> body
     ) {

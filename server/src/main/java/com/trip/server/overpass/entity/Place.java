@@ -1,5 +1,6 @@
 package com.trip.server.overpass.entity;
 
+import com.trip.server.database.enumeration.PlaceType;
 import com.trip.server.model.OsmIdentifiable;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -14,9 +15,9 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 public class Place implements OsmIdentifiable {
 
-    private Long osmId;
+    private String osmId;
 
-    private String type;
+    private PlaceType type;
 
     @Nullable
     private String name;

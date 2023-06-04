@@ -1,87 +1,110 @@
 package com.trip.server.overpass.query;
 
+import com.trip.server.model.OsmType;
+
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Query {
 
-    private final String type;
+    private final List<String> defaultAreaTags;
+    private final Settings settings = new Settings();
+    private Area area = null;
+    private final Body body = new Body();
 
-    private final String defaultAreaTags;
-
-    private String area = null;
-
-    private String body = null;
-
-    public Query(String type, String defaultAreaTags) {
-        this.type = asTag("out:" + type);
+    public Query(List<String> defaultAreaTags, OutputFormat format) {
         this.defaultAreaTags = defaultAreaTags;
+        settings.setOutputFormat(format);
     }
 
-    private String asTag(String tag) {
-        return "[" + tag + "]";
+    public Query id(String id) {
+        var idAsNumber = Long.parseLong(id.substring(1));
+
+        if (id.startsWith(OsmType.NODE.getPrefix())) {
+            body.addSet(Node.withIds(idAsNumber));
+        } else if (id.startsWith(OsmType.WAY.getPrefix())) {
+            body.addSet(Way.withIds(idAsNumber));
+        } else {
+            body.addSet(Relation.withIds(idAsNumber));
+        }
+
+        return this;
     }
 
-    private String asTags(String... tags) {
-        return Stream.of(tags)
-                .map(this::asTag)
-                .collect(Collectors.joining());
-    }
-
-    private String asLine(String... parts) {
-        return join("", (Object[]) parts) + ";";
-    }
-
-    private String join(String delimiter, Object... objects) {
-        return Stream.of(objects)
-                .map(Object::toString)
-                .collect(Collectors.joining(delimiter));
-    }
-
-    private String withArea(String query) {
-        return query.formatted(area != null ? "(area)" : "");
+    public Query boundingBox(Double lat0, Double lon0, Double lat1, Double lon1) {
+        settings.setBoundingBox(new BoundingBox(lat0, lon0, lat1, lon1));
+        return this;
     }
 
     public Query defaultArea() {
-        area = asLine("area", defaultAreaTags);
+        area = Area.withTags(defaultAreaTags.toArray(String[]::new));
         return this;
     }
 
-    public Query area(Long... ids) {
-        area = asLine("area(id: ", join(", ", (Object[]) ids), ")");
+    public Query area(Area area) {
+        this.area = area;
         return this;
     }
 
-    public Query area(String... tags) {
-        area = asLine("area", asTags(tags));
-        return this;
-    }
-
-    public Query node(Long... ids) {
-        body = asLine("node(id: ", join(", ", (Object[]) ids), ")");
-        return this;
-    }
-
-    public Query node(String... tags) {
-        body = asLine("node", asTags(tags), "%s");
-        return this;
-    }
-
-    public Query way(Long... ids) {
-        body = asLine("way(id: ", join(", ", (Object[]) ids), ")");
-        return this;
-    }
-
-    public Query way(String... tags) {
-        body = asLine("way", asTags(tags), "%s");
+    public Query set(Set set) {
+        body.addSet(set);
         return this;
     }
 
     public String out() {
-        return asLine(type) +
-                (area != null ? area : "") +
-                (body != null ? withArea(body) : "") +
-                asLine("out");
+        return out(Out.DEFAULT);
+    }
+
+    /**
+     * Own object type, Own object ID
+     */
+    public String outIds() {
+        return out(Out.IDS);
+    }
+
+    /**
+     * For nodes: Own object type, Own object ID, Own coordinates<br>
+     * For ways: Own object type, Own object ID, IDs of member nodes<br>
+     * For relations: Own object type, Own object ID, ID, type, role of members
+     */
+    public String outSkel() {
+        return out(Out.SKEL);
+    }
+
+    /**
+     * For nodes: Own object type, Own object ID, Own coordinates, Own tags<br>
+     * For ways: Own object type, Own object ID, IDs of member nodes, Own tags<br>
+     * For relations: Own object type, Own object ID, ID, type, role of members, Own tags
+     */
+    public String outBody() {
+        return out(Out.BODY);
+    }
+
+    /**
+     * Own object type, Own object ID, Own tags
+     */
+    public String outTags() {
+        return out(Out.TAGS);
+    }
+
+    /**
+     * For nodes: Own object type, Own object ID, Own coordinates, Own tags, Timestamp, VersionChangeset, User, User ID<br>
+     * For ways: Own object type, Own object ID, IDs of member nodes, Own tags, Timestamp, VersionChangeset, User, User ID<br>
+     * For relations: Own object type, Own object ID, ID, type, role of members, Own tags, Timestamp, VersionChangeset, User, User ID
+     */
+    public String outMeta() {
+        return out(Out.META);
+    }
+
+    private String out(Out out) {
+        return Stream.of(settings, area, body, out)
+                .filter(Objects::nonNull)
+                .map(String::valueOf)
+                .filter(s -> !s.isBlank())
+                .map(s -> s + ";")
+                .collect(Collectors.joining());
     }
 
 }

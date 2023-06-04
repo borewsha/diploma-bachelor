@@ -6,7 +6,8 @@ import com.trip.server.model.OsmIdentifiable;
 import fr.dudie.nominatim.client.NominatimClient;
 import fr.dudie.nominatim.model.Address;
 import lombok.AllArgsConstructor;
-import org.springframework.data.util.Streamable;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.ListUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -15,39 +16,38 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class NominatimService {
 
+    private final static Integer MAX_SIZE = 50;
+
     private final NominatimClient nominatimClient;
 
-    public Map<Long, Address> lookupNodes(List<? extends OsmIdentifiable> osmIds) {
-        return lookup(osmIds, OsmType.NODE);
-    }
-
-    public Map<Long, Address> lookupWays(List<? extends OsmIdentifiable> osmIds) {
-        return lookup(osmIds, OsmType.WAY);
-    }
-
-    public Map<Long, Address> lookupRelations(List<? extends OsmIdentifiable> osmIds) {
-        return lookup(osmIds, OsmType.RELATION);
-    }
-
-    private Map<Long, Address> lookup(List<? extends OsmIdentifiable> osmIds, OsmType osmType) {
-        var prefixedOsmIds = toOsmIds(osmIds, osmType);
-        try {
-            // TODO: убрать ограничение в максимум 50 объектов в одном запросе
-            return nominatimClient.lookupAddress(prefixedOsmIds).stream()
-                    .collect(Collectors.toMap(a -> Long.parseLong(a.getOsmId()), Function.identity()));
-        } catch (IOException e) {
-            throw new InternalServerErrorException("Ошибка во время обратного геокодирования объектов OSM", e);
-        }
-    }
-
-    private List<String> toOsmIds(List<? extends OsmIdentifiable> identifiableList, OsmType osmType) {
-        return identifiableList.stream()
-                .map(identifiable -> osmType.getPrefix() + identifiable.getOsmId())
+    public Map<String, Address> lookupByObjects(List<? extends OsmIdentifiable> osmObjects) {
+        var osmIds = osmObjects.stream()
+                .map(OsmIdentifiable::getOsmId)
                 .toList();
+        return lookupByIds(osmIds);
+    }
+
+    public Map<String, Address> lookupByIds(List<String> osmIds) {
+        return ListUtils.partition(osmIds, MAX_SIZE).stream()
+                .map(p -> {
+                    try {
+                        log.debug("IDs to lookup addresses: {}", p);
+                        return nominatimClient.lookupAddress(p);
+                    } catch (IOException e) {
+                        throw new InternalServerErrorException("Ошибка во время обратного геокодирования объектов OSM", e);
+                    }
+                })
+                .flatMap(List::stream)
+                .collect(Collectors.toMap(this::getPrefixedId, Function.identity()));
+    }
+
+    private String getPrefixedId(Address address) {
+        return OsmType.valueOf(address.getOsmType().toUpperCase()).getPrefix() + address.getOsmId();
     }
 
 }

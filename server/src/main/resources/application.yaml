@@ -20,7 +20,7 @@ spring:
 overpass:
   host: ${OVERPASS_HOST:localhost}
   port: ${OVERPASS_PORT:8082}
-  default-area-tags: ${OVERPASS_DEFAULT_AREA_TAGS:[admin_level=4]}
+  default-area-tags: ${OVERPASS_DEFAULT_AREA_TAGS:admin_level=4}
 
 nominatim:
   host: ${NOMINATIM_HOST:localhost}
@@ -32,7 +32,12 @@ jwt:
     session:
       time-millis: ${JWT_ACCESS_SESSION_TIME_MILLIS:3600000}
   refresh:
-    secret:
-      ${JWT_REFRESH_SECRET:nQjZqFCjkMPIok9+a1RO+RguMSXmcx9GE8JRg6be7G1YHzKCwrhy+eIC3Q2gg7TDh6dLvdjc7vh6J8ujyWUsSQ==}
+    secret: ${JWT_REFRESH_SECRET:nQjZqFCjkMPIok9+a1RO+RguMSXmcx9GE8JRg6be7G1YHzKCwrhy+eIC3Q2gg7TDh6dLvdjc7vh6J8ujyWUsSQ==}
     session:
       time-millis: ${JWT_REFRESH_SESSION_TIME_MILLIS:2592000000}
+
+logging:
+  level:
+    root: ${LOGGING_ROOT_LEVEL:INFO}
+    com:
+      trip: ${LOGGING_TRIP_LEVEL:INFO}

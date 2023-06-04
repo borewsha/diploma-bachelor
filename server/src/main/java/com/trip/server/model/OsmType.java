@@ -24,4 +24,8 @@ public enum OsmType {
         this.prefix = prefix;
     }
 
+    public String getPrefixedId(Long id) {
+        return prefix + id;
+    }
+
 }

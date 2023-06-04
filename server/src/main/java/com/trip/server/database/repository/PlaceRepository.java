@@ -10,6 +10,6 @@ import java.util.List;
 @Repository
 public interface PlaceRepository extends JpaRepository<Place, Long> {
 
-    List<Place> findByOsmIdIn(Collection<Long> osmIds);
+    List<Place> findByOsmIdIn(Collection<String> osmIds);
 
 }

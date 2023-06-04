@@ -1,6 +1,7 @@
 package com.trip.server.overpass.entity;
 
 import com.trip.server.model.OsmIdentifiable;
+import com.trip.server.model.OsmType;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.springframework.lang.Nullable;
@@ -14,7 +15,7 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 public class City implements OsmIdentifiable {
 
-    private Long osmId;
+    private String osmId;
 
     private String name;
 
@@ -24,5 +25,7 @@ public class City implements OsmIdentifiable {
     private Double lat;
 
     private Double lon;
+
+    private Integer population;
 
 }

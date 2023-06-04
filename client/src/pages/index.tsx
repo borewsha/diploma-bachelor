@@ -1,9 +1,8 @@
 import SignInPage from 'pages/auth/SignInPage'
 import SignUpPage from 'pages/auth/SignUpPage'
 import React, {FC} from 'react'
-import {BrowserRouter, Route, Routes} from 'react-router-dom'
+import {BrowserRouter, Navigate, Route, Routes} from 'react-router-dom'
 import {getAccessToken} from 'shared/helpers/jwt'
-import Hello from './HelloPage'
 import Home from './HomePage'
 
 const Routing: FC = () => {
@@ -17,15 +16,19 @@ const Routing: FC = () => {
             element: <SignInPage/>
         },
         {
-            path: '/hello',
-            element: <Hello/>
+            path: '*',
+            element: <SignInPage/>
         }
     ]
 
     const authorizedNavigation = [
         {
-            path: '/home',
+            path: '/home/*',
             element: <Home/>
+        },
+        {
+            path: '*',
+            element: <Navigate to="/home"/>
         }
     ]
 
@@ -44,7 +47,6 @@ const Routing: FC = () => {
                     && unauthorizedNavigation.map(({path, element}) =>
                         <Route key={path} path={path} element={element}/>)
                 }
-                <Route path="*" element={<Hello/>}/>
             </Routes>
         </BrowserRouter>
     )

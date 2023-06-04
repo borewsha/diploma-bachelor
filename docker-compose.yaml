@@ -11,6 +11,9 @@ services:
       POSTGRES_HOST_AUTH_METHOD: trust
     ports:
       - ${DATABASE_PORT}:5432
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
   osm-tile-server:
     image: overv/openstreetmap-tile-server:2.3.0
     container_name: trip_osm_tile_server
@@ -86,4 +89,4 @@ volumes:
   osm-overpass:
     external: true
   osrm:
-    external: true
+    external: false

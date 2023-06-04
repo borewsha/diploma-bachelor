@@ -20,3 +20,5 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 - React-Redux
 - Redux Toolkit
 - Firebase
+- React Leaflet
+- React Yandex Maps

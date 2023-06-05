@@ -66,14 +66,18 @@ public class PlaceService {
 
         tourism.forEach(t -> Optional.ofNullable(lookupResponse.get(t.getOsmId()))
                 .ifPresent(a -> {
-                    Arrays.stream(a.getAddressElements())
-                            .filter(e -> TextUtil.containsCyrillic(e.getValue()))
-                            .filter(e -> e.getKey().equals("road") || e.getKey().equals("city_district"))
-                            .findFirst()
-                            .map(Element::getValue)
-                            .ifPresent(t::setAddress);
-                    t.setLat(a.getLatitude());
-                    t.setLon(a.getLongitude());
+                    if (t.getAddress() == null) {
+                        Arrays.stream(a.getAddressElements())
+                                .filter(e -> TextUtil.containsCyrillic(e.getValue()))
+                                .filter(e -> e.getKey().equals("road") || e.getKey().equals("city_district"))
+                                .findFirst()
+                                .map(Element::getValue)
+                                .ifPresent(t::setAddress);
+                    }
+                    if (t.getLat() == null || t.getLon() == null) {
+                        t.setLat(a.getLatitude());
+                        t.setLon(a.getLongitude());
+                    }
                 })
         );
     }

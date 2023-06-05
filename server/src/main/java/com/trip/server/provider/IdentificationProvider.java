@@ -1,4 +1,4 @@
-package com.trip.server.model;
+package com.trip.server.provider;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

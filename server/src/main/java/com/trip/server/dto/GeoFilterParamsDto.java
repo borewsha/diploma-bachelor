@@ -25,7 +25,7 @@ public class GeoFilterParamsDto {
     private List<Double> bbox = null;
 
     @Schema(
-            description = "Радиус вокруг (в км)",
+            description = "Радиус вокруг относительно некоторой точки (в км)",
             example = "5"
     )
     @Nullable

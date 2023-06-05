@@ -5,6 +5,7 @@ import com.trip.server.database.enumeration.PlaceType;
 import com.trip.server.dto.PlaceDto;
 import com.trip.server.overpass.model.Element;
 import org.modelmapper.ModelMapper;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -15,10 +16,10 @@ public class PlaceMapper implements Mapper {
                 .setConverter(mappingContext -> {
                     var element = mappingContext.getSource();
                     return new com.trip.server.overpass.entity.Place(
-                            element.getType().getPrefixedId(element.getId()),
+                            getOsmId(element),
                             PlaceType.BUILDING,
-                            element.getTags().getOrDefault("name", null),
-                            element.getTags().get("addr:street") + ", " + element.getTags().get("addr:housenumber"),
+                            getName(element),
+                            getAddress(element),
                             element.getLat(),
                             element.getLon()
                     );
@@ -28,10 +29,10 @@ public class PlaceMapper implements Mapper {
                 .setConverter(mappingContext -> {
                     var element = mappingContext.getSource();
                     return new com.trip.server.overpass.entity.Place(
-                            element.getType().getPrefixedId(element.getId()),
+                            getOsmId(element),
                             PlaceType.TOURISM,
-                            element.getTags().getOrDefault("name", element.getTags().get("description")),
-                            null,
+                            getName(element),
+                            getAddress(element),
                             element.getLat(),
                             element.getLon()
                     );
@@ -42,7 +43,7 @@ public class PlaceMapper implements Mapper {
                     var place = mappingContext.getSource();
                     return new PlaceDto(
                             place.getId(),
-                            place.getImage() != null ? place.getImage().getId() : null,
+                            getImageId(place),
                             place.getOsmId(),
                             place.getName(),
                             place.getAddress(),
@@ -50,6 +51,27 @@ public class PlaceMapper implements Mapper {
                             place.getLon()
                     );
                 });
+    }
+
+    private String getOsmId(Element element) {
+        return element.getType().getPrefixedId(element.getId());
+    }
+
+    @Nullable
+    private String getName(Element element) {
+        return element.getTags().getOrDefault("name", element.getTags().getOrDefault("description", null));
+    }
+
+    @Nullable
+    private String getAddress(Element element) {
+        return element.getTags().containsKey("addr:street") && element.getTags().containsKey("addr:housenumber")
+                ? element.getTags().get("addr:street") + ", " + element.getTags().get("addr:housenumber")
+                : null;
+    }
+
+    @Nullable
+    private Long getImageId(Place place) {
+        return place.getImage() != null ? place.getImage().getId() : null;
     }
 
 }

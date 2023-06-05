@@ -1,7 +1,7 @@
 package com.trip.server.configuration;
 
 import com.trip.server.converter.EnumCaseInsensitiveConverter;
-import com.trip.server.model.IdentificationProvider;
+import com.trip.server.provider.IdentificationProvider;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.*;
 import org.springframework.format.FormatterRegistry;

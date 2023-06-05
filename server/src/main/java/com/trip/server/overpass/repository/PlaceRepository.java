@@ -104,7 +104,11 @@ public class PlaceRepository {
         }
 
         var request = query.area(Area.withTags("place~'city|town'", "name='" + city + "'"))
-                .set(NodeWay.withTags("tourism", "tourism!~'^(hotel|hostel|information|apartment)$'", "~'^(name|description)$'~'.'").area())
+                .set(NodeWay.withTags(
+                        "tourism",
+                        "tourism!~'^(hotel|hostel|information|apartment|guest_house)$'",
+                        "~'^(name|description)$'~'.'"
+                ).area())
                 .out();
 
         return getResponse(request).stream()

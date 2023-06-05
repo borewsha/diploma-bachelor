@@ -22,7 +22,7 @@ public class DataDto<T> {
     private Integer totalElements;
 
     @Schema(
-            description = "Данные запроса"
+            description = "Возвращаемые сервером данные"
     )
     private List<T> data;
 

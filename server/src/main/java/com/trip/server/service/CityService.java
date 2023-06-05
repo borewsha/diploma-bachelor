@@ -4,7 +4,7 @@ import com.trip.server.database.entity.City;
 import com.trip.server.exception.NotFoundException;
 import com.trip.server.database.repository.CityRepository;
 import com.trip.server.model.CityPatch;
-import com.trip.server.model.IdentificationProvider;
+import com.trip.server.provider.IdentificationProvider;
 import com.trip.server.util.PageUtil;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;

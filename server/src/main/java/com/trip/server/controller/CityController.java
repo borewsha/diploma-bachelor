@@ -2,7 +2,7 @@ package com.trip.server.controller;
 
 import com.trip.server.dto.*;
 import com.trip.server.model.CityPatch;
-import com.trip.server.model.IdentificationProvider;
+import com.trip.server.provider.IdentificationProvider;
 import com.trip.server.service.CityService;
 import com.trip.server.util.PageUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -77,7 +77,7 @@ public class CityController extends ApiController {
     )
     @PatchMapping("/{id}")
     public ResponseEntity<?> patch(
-            @PathVariable Long id,
+            @PathVariable String id,
             @RequestParam(required = false) IdentificationProvider provider,
             @RequestBody Map<String, Object> body
     ) {

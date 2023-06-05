@@ -29,10 +29,10 @@ public class PlaceDto implements Identifiable, OsmIdentifiable {
 
     @Schema(
             description = "ID в базе данных OSM",
-            example = "23946365"
+            example = "W23946365"
     )
     @Nullable
-    private Long osmId;
+    private String osmId;
 
     @Schema(
             description = "Название",

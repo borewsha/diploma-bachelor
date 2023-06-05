@@ -32,7 +32,7 @@ public class City implements Identifiable {
     @Nullable
     private Image image;
 
-    private Long osmId;
+    private String osmId;
 
     private String name;
 

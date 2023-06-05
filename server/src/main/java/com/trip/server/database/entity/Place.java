@@ -29,7 +29,7 @@ public class Place implements Identifiable {
     private Image image;
 
     @Nullable
-    private Long osmId;
+    private String osmId;
 
     @Enumerated(EnumType.STRING)
     private PlaceType type;

@@ -108,6 +108,13 @@ class QueryTest {
     }
 
     @Test
+    public void testFindByIdQuery() {
+        assertEquals("[out:json];node(id:12345);out;", queryBuilder.json().id("N12345").out());
+        assertEquals("[out:json];way(id:12345);out;", queryBuilder.json().id("W12345").out());
+        assertEquals("[out:json];rel(id:12345);out;", queryBuilder.json().id("R12345").out());
+    }
+
+    @Test
     public void testOutQuery() {
         assertEquals("[out:json];out ids;", queryBuilder.json().outIds());
         assertEquals("[out:json];out skel;", queryBuilder.json().outSkel());

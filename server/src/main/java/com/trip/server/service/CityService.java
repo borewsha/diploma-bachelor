@@ -6,18 +6,19 @@ import com.trip.server.database.repository.CityRepository;
 import com.trip.server.model.CityPatch;
 import com.trip.server.provider.IdentificationProvider;
 import com.trip.server.util.PageUtil;
+import fr.dudie.nominatim.model.Element;
 import lombok.AllArgsConstructor;
+import org.apache.commons.text.similarity.FuzzyScore;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @AllArgsConstructor
@@ -33,6 +34,10 @@ public class CityService {
 
     private final ModelMapper modelMapper;
 
+    private final FuzzyScore score;
+
+    private final Comparator<com.trip.server.overpass.entity.City> populationComparator = Comparator.comparing(c -> -c.getPopulation());
+
     public City getById(String id, @Nullable IdentificationProvider provider) {
         if (provider == IdentificationProvider.OSM) {
             return cityRepository.findByOsmId(id)
@@ -44,12 +49,15 @@ public class CityService {
     }
 
     public Page<City> getAll(@Nullable String search, Pageable pageable) {
-        var overpassCities = search == null || search.isEmpty()
-                ? overpassCityRepository.findTop(pageable)
-                : overpassCityRepository.findWithSearch(search, pageable);
-        geocode(overpassCities.getContent());
+        var overpassCities = overpassCityRepository.findAll();
 
-        return toPageOfDatabaseCities(overpassCities);
+        var comparator = search == null || search.isBlank() ? populationComparator : getSimilarityComparator(search);
+        overpassCities.sort(comparator);
+
+        var pagedOverpassCities = PageUtil.paginate(overpassCities, pageable);
+        geocode(pagedOverpassCities.getContent());
+
+        return toPagedDatabaseCities(pagedOverpassCities);
     }
 
     public void patch(String id, @Nullable IdentificationProvider provider, CityPatch patch) {
@@ -90,11 +98,12 @@ public class CityService {
                         .filter(e -> e.getKey().equals("state"))
                         .findFirst()
                 )
-                .ifPresent(e -> c.setRegion(e.getValue()))
+                .map(Element::getValue)
+                .ifPresent(c::setRegion)
         );
     }
 
-    private Page<City> toPageOfDatabaseCities(Page<com.trip.server.overpass.entity.City> overpassCities) {
+    private Page<City> toPagedDatabaseCities(Page<com.trip.server.overpass.entity.City> overpassCities) {
         var osmIds = overpassCities.stream()
                 .map(com.trip.server.overpass.entity.City::getOsmId)
                 .toList();
@@ -111,6 +120,17 @@ public class CityService {
                 .toList();
 
         return PageUtil.mapContent(overpassCities, databaseCities);
+    }
+
+    private Comparator<com.trip.server.overpass.entity.City> getSimilarityComparator(String search) {
+        var cache = new HashMap<com.trip.server.overpass.entity.City, Integer>();
+
+        return Comparator.comparing(c -> cache.computeIfAbsent(c, k -> Stream.of(k.getName(), k.getRegion())
+                .filter(Objects::nonNull)
+                .map(s -> -score.fuzzyScore(s, search))
+                .reduce(Integer::sum)
+                .orElse(0)
+        ));
     }
 
     private static NotFoundException getNotFoundException() {

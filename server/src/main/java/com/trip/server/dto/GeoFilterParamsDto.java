@@ -1,11 +1,13 @@
 package com.trip.server.dto;
 
 import com.trip.server.validator.BoundingBox;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
+import org.springframework.web.bind.annotation.RequestPart;
 
 import javax.validation.constraints.Min;
 import java.util.List;

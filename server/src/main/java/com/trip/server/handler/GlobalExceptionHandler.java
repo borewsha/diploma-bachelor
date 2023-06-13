@@ -25,35 +25,32 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<InvalidFieldsDto> handleConstraintViolationException(
-        ConstraintViolationException exception
+            ConstraintViolationException exception
     ) {
         var errors = exception.getConstraintViolations().stream()
-            .map(cv -> {
-                var fieldName = cv.getPropertyPath().toString();
-                for (var propertyPath : cv.getPropertyPath()) {
-                    fieldName = propertyPath.getName();
-                }
-                return new InvalidFieldDto(fieldName, cv.getMessage());
-            })
-            .toList();
+                .map(cv -> {
+                    var fieldName = cv.getPropertyPath().toString();
+                    for (var propertyPath : cv.getPropertyPath()) {
+                        fieldName = propertyPath.getName();
+                    }
+                    return new InvalidFieldDto(fieldName, cv.getMessage());
+                })
+                .toList();
 
         return ResponseEntity.badRequest().body(
-            new InvalidFieldsDto("Некоторые поля не прошли валидацию", errors)
+                new InvalidFieldsDto("Некоторые поля не прошли валидацию", errors)
         );
     }
 
     @ExceptionHandler(BindException.class)
     public ResponseEntity<InvalidFieldsDto> handleBindException(BindException exception) {
         var errors = exception.getBindingResult().getAllErrors().stream()
-            .map(e -> {
-                var fieldName = ((FieldError) e).getField();
-                var message = e.getDefaultMessage();
-                return new InvalidFieldDto(fieldName, message);
-            })
-            .toList();
+                .map(e -> (FieldError) e)
+                .map(e -> new InvalidFieldDto(e.getField(), e.getDefaultMessage()))
+                .toList();
 
         return ResponseEntity.badRequest().body(
-            new InvalidFieldsDto("Некоторые поля не прошли валидацию", errors)
+                new InvalidFieldsDto("Некоторые поля не прошли валидацию", errors)
         );
     }
 

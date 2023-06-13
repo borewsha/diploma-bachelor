@@ -8,19 +8,21 @@ import com.trip.server.util.PageUtil;
 import com.trip.server.util.TextUtil;
 import fr.dudie.nominatim.model.Element;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.text.similarity.FuzzyScore;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
+@Slf4j
 @AllArgsConstructor
 public class PlaceService {
 
@@ -32,19 +34,28 @@ public class PlaceService {
 
     private final ModelMapper modelMapper;
 
-    public Page<Place> getBuildings(String city, @Nullable String search, Pageable pageable) {
-        var buildings = search == null || search.isEmpty()
-                ? overpassPlaceRepository.findBuildings(city, pageable)
-                : overpassPlaceRepository.findBuildingsWithSearch(city, search, pageable);
-        geocodeBuildings(buildings.getContent());
+    private final FuzzyScore score;
 
-        return toPageOfDatabasePlaces(buildings);
+    public Page<Place> getBuildings(String city, @Nullable String search, Pageable pageable) {
+        var buildings = overpassPlaceRepository.findBuildingsByCity(city);
+
+        if (search != null && !search.isBlank()) {
+            buildings.sort(getSimilarityComparator(search));
+        }
+
+        var pagedBuildings = PageUtil.paginate(buildings, pageable);
+        geocodeBuildings(pagedBuildings.getContent());
+
+        return toPagedDatabasePlaces(pagedBuildings);
     }
 
     public List<Place> getTourism(String city, @Nullable String search, GeoFilters geoFilters) {
-        var tourism = search == null || search.isEmpty()
-                ? overpassPlaceRepository.findTourism(city, geoFilters)
-                : overpassPlaceRepository.findTourismWithSearch(city, search, geoFilters);
+        var tourism = overpassPlaceRepository.findTourismByCity(city, geoFilters);
+
+        if (search != null && !search.isBlank()) {
+            tourism.sort(getSimilarityComparator(search));
+        }
+
         geocodeTourism(tourism);
 
         return toListOfDatabasePlaces(tourism);
@@ -82,7 +93,7 @@ public class PlaceService {
         );
     }
 
-    private Page<Place> toPageOfDatabasePlaces(Page<com.trip.server.overpass.entity.Place> overpassPlaces) {
+    private Page<Place> toPagedDatabasePlaces(Page<com.trip.server.overpass.entity.Place> overpassPlaces) {
         var osmIds = overpassPlaces.stream()
                 .map(com.trip.server.overpass.entity.Place::getOsmId)
                 .toList();
@@ -114,6 +125,17 @@ public class PlaceService {
                         })
                 )
                 .toList();
+    }
+
+    private Comparator<com.trip.server.overpass.entity.Place> getSimilarityComparator(String search) {
+        var cache = new HashMap<com.trip.server.overpass.entity.Place, Integer>();
+
+        return Comparator.comparing(p -> cache.computeIfAbsent(p, k -> Stream.of(k.getName(), k.getAddress())
+                .filter(Objects::nonNull)
+                .map(data -> -score.fuzzyScore(data, search))
+                .reduce(Integer::sum)
+                .orElse(0)
+        ));
     }
 
     private static NotFoundException getNotFoundException() {

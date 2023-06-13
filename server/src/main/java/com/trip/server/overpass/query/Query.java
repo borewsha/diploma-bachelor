@@ -1,9 +1,11 @@
 package com.trip.server.overpass.query;
 
 import com.trip.server.model.OsmType;
+import org.springframework.lang.Nullable;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -35,6 +37,13 @@ public class Query {
 
     public Query boundingBox(Double lat0, Double lon0, Double lat1, Double lon1) {
         settings.setBoundingBox(new BoundingBox(lat0, lon0, lat1, lon1));
+        return this;
+    }
+
+    public Query boundingBox(@Nullable List<Double> bbox) {
+        Optional.ofNullable(bbox)
+                .map(bb -> new BoundingBox(bb.get(0), bb.get(1), bb.get(2), bb.get(3)))
+                .ifPresent(settings::setBoundingBox);
         return this;
     }
 

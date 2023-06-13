@@ -2,7 +2,6 @@ package com.trip.server.configuration;
 
 import de.westnordost.osmapi.OsmConnection;
 import de.westnordost.osmapi.overpass.OverpassMapDataApi;
-import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.context.annotation.*;
 import org.springframework.web.util.DefaultUriBuilderFactory;
@@ -26,11 +25,6 @@ public class OverpassConfiguration {
                 .build();
         var connection = new OsmConnection(apiUrl.toString(), "User-Agent");
         return new OverpassMapDataApi(connection);
-    }
-
-    @Bean
-    public LevenshteinDistance levenshteinDistance() {
-        return LevenshteinDistance.getDefaultInstance();
     }
 
 }

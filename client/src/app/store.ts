@@ -1,13 +1,17 @@
 import {configureStore} from '@reduxjs/toolkit'
 import authSlice from 'features/auth/authSlice'
-import citySlice from 'features/city/citiesSlice'
-import buildSlice from 'features/buildingsSlice'
+import citySlice from 'features/citiesSlice'
+import placesSlice from 'features/placesSlice'
+import mapSlice from 'features/mapSlice'
+import travelSlice from 'features/travelSlice'
 
 const store = configureStore({
     reducer: {
         auth: authSlice,
         city: citySlice,
-        building: buildSlice
+        places: placesSlice,
+        map: mapSlice,
+        travel: travelSlice
     }
 })
 

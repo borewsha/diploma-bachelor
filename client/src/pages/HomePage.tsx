@@ -3,14 +3,9 @@ import {Layout, Menu, theme} from 'antd'
 import {CompassOutlined, GlobalOutlined, PlusOutlined} from '@ant-design/icons'
 import {Route, Routes, useNavigate} from 'react-router-dom'
 import MyTravels from './MyTravels'
-import Map from './Map'
+import Map from 'entities/Map'
 import CreateTravel from './CreateTravel'
-
-type City = {
-    id: number
-    name: string
-    region: string
-}
+import TravelDetail from './TravelDetail'
 
 const Home = () => {
     const navigate = useNavigate()
@@ -31,6 +26,10 @@ const Home = () => {
         {
             path: '/create',
             element: <CreateTravel/>
+        },
+        {
+            path: '/travel/:id',
+            element: <TravelDetail/>
         }
     ]
 
@@ -45,7 +44,7 @@ const Home = () => {
                 top: 0,
                 zIndex: 1
             }}>
-                <img height={30} src={require('../shared/logo.png')} alt="Traveler"/>
+                <img height={30} src={require('shared/logo.png')} alt="Traveler"/>
                 <Menu
                     theme="light"
                     style={{width: '100%', marginLeft: 20}}

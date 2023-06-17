@@ -1,5 +1,6 @@
 import React from 'react'
 import {Card, Col, Row, Typography} from 'antd'
+import {Link} from 'react-router-dom'
 
 const MyTravels = () => {
     const travelsData = [
@@ -67,11 +68,13 @@ const MyTravels = () => {
                     {
                         travelsData.map(data =>
                             <Col
+                                key={data.id}
                                 xs={{span: 24}}
                                 sm={{span: 12}}
                                 md={{span: 8}}
                                 lg={{span: 6}}
                             >
+                                <Link to={`/home/travel/${data.id}`}>
                                 <Card
                                     bordered
                                     hoverable
@@ -83,6 +86,7 @@ const MyTravels = () => {
                                         description={`${formatter.format(Date.parse(data.dateStart))} - ${formatter.format(Date.parse(data.dateEnd))}`}
                                     />
                                 </Card>
+                                </Link>
                             </Col>
                         )
                     }

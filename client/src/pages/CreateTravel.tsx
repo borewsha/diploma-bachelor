@@ -1,62 +1,26 @@
-import React, {useState} from 'react'
-import {Button, DatePicker, Form, message, Select, Typography} from 'antd'
-import Map from 'pages/Map'
-import dayjs from 'dayjs'
+import React from 'react'
+import {Form, message, Typography} from 'antd'
 import 'dayjs/locale/ru'
-import {useAppDispatch, useAppSelector} from '../shared/hooks'
-import {City, searchingCities} from 'features/city/citiesSlice'
-import {addAttraction, Building, createTravel, removeAttraction, searchingBuildings} from 'features/buildingsSlice'
+import {useAppDispatch, useAppSelector} from 'shared/hooks'
+import {createTravel} from 'features/travelSlice'
+import CitySelect from 'features/createTravel/form/CitySelect'
+import CreateTravelMap from 'widgets/createTravelMap/CreateTravelMap'
+import AccommodationSelect from 'features/createTravel/form/AccommodationSelect'
+import AttractionsSelect from 'features/createTravel/form/AttractionsSelect'
+import DateSelect from '../features/createTravel/form/DateSelect'
+import SendButton from '../features/createTravel/form/SendButton'
 
 const CreateTravel = () => {
-    const [cities, setCities] = useState<{ value: string, label: string }[]>([])
-    const [buildings, setBuildings] = useState<any[]>([])
-    const [center, setCenter] = useState<any>([43.1056, 131.874])
-    const [city, setCity] = useState<any>('')
     const dispatch = useAppDispatch()
 
     const isLoading = useAppSelector(state => state.city.isLoading)
-    const citiesStore = useAppSelector(state => state.city.data)
-    const buildingsStore = useAppSelector(state => state.building.data)
-    const attractions = useAppSelector(state => state.building.attractions)
-
-    const citySearch = async (cityName: string) => {
-        await dispatch(searchingCities(cityName))
-            .unwrap()
-            .then(res => res.map((city: City) =>
-                ({
-                    value: city.name,
-                    label: city.name + ', ' + city.region
-                })))
-            .then(res => setCities(res))
-    }
-
-    const buildingSearch = async (city: string, building: string) => {
-        await dispatch(searchingBuildings({city, building}))
-            .unwrap()
-            .then(res => setBuildings(res))
-    }
 
     const onFinish = async (data: any) => {
-        dispatch(createTravel(data))
+        await dispatch(createTravel(data))
     }
 
     const onFinishFailed = async () => {
         await message.error('Ошибка при заполнении формы!')
-    }
-
-    const getCityCoords = (cityName: string) => {
-        const city = citiesStore.filter(city => city.name === cityName)[0]
-        return [city.lat, city.lon]
-    }
-
-    const getBuildingCoords = (osmId: number) => {
-        const building = buildingsStore.filter(building =>
-            building.osmId === osmId)[0]
-        return [building.lat, building.lon]
-    }
-
-    const getBuilding = (osmId: number) => {
-        return buildings.filter(building => building.osmId === osmId)[0]
     }
 
     return (
@@ -68,97 +32,60 @@ const CreateTravel = () => {
                 height: window.innerHeight - 64
             }}>
                 <Typography.Title>Создать поездку</Typography.Title>
-                <Form
-                    name="createTravel"
-                    onFinish={onFinish}
-                    onFinishFailed={onFinishFailed}
-                    layout='vertical'
-                >
+                <Form name="createTravel" onFinish={onFinish} onFinishFailed={onFinishFailed} layout="vertical">
                     <Form.Item
                         name="city"
                         label="Город"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Заполните поле'
+                            }
+                        ]}
                     >
-                        <Select
-                            showSearch
-                            placeholder="Начните вводить город..."
-                            defaultActiveFirstOption={false}
-                            showArrow={false}
-                            filterOption={false}
-                            onSearch={citySearch}
-                            notFoundContent={null}
-                            options={cities}
-                            onSelect={(value) => {
-                                setCenter(getCityCoords(value))
-                                setCity(value)
-                            }}
-                        />
+                        <CitySelect/>
                     </Form.Item>
                     <Form.Item
                         name="dates"
                         label="Даты поездки"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Заполните поле'
+                            }
+                        ]}
                     >
-                        <DatePicker.RangePicker
-                            style={{width: '100%'}}
-                            placeholder={['Начало', 'Конец']}
-                            disabledDate={(date) => date < dayjs(new Date()).subtract(1, 'day')}
-                        />
+                        <DateSelect/>
                     </Form.Item>
                     <Form.Item
-                        name="overnightStay"
-                        label="Место ночлега"
+                        name="accommodation"
+                        label="Ночлег"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Заполните поле'
+                            }
+                        ]}
                     >
-                        <Select
-                            showSearch
-                            placeholder="Начните вводить место..."
-                            defaultActiveFirstOption={false}
-                            showArrow={false}
-                            filterOption={false}
-                            onSearch={building => buildingSearch(city, building)}
-                            notFoundContent={null}
-                            options={(buildings || []).map((building: Building) => ({
-                                value: building.osmId,
-                                label: building.name ? building.name + ' (' + building.address + ')' : building.address})
-                            )}
-                            onSelect={value => setCenter(getBuildingCoords(value))}
-                        />
+                        <AccommodationSelect/>
                     </Form.Item>
                     <Form.Item
                         name="attractions"
                         label="Места для посещения"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Заполните поле'
+                            }
+                        ]}
                     >
-                        <Select
-                            showSearch
-                            mode="multiple"
-                            placeholder="Начните вводить место..."
-                            defaultActiveFirstOption={false}
-                            showArrow={false}
-                            filterOption={false}
-                            onSearch={building => buildingSearch(city, building)}
-                            notFoundContent={null}
-                            options={(buildings || []).map((building: Building) => ({
-                                value: building.osmId,
-                                label: building.name ? building.name + ' (' + building.address + ')' : building.address})
-                            )}
-                            onSelect={value => {
-                                setCenter(getBuildingCoords(value))
-                                dispatch(addAttraction(getBuilding(value)))
-                            }}
-                            onDeselect={value => {
-                                dispatch(removeAttraction(value))
-                            }}
-                        />
+                        <AttractionsSelect/>
                     </Form.Item>
-                    <Button
-                        type="primary"
-                        style={{width: '100%', margin: '10px 0'}}
-                        htmlType="submit"
-                        loading={isLoading}
-                    >Создать</Button>
+                    <SendButton/>
                 </Form>
             </div>
-
             <div style={{height: window.innerHeight - 64, width: '100%'}}>
-                <Map center={center} attractions={attractions}/>
+                <CreateTravelMap/>
             </div>
         </div>
     )

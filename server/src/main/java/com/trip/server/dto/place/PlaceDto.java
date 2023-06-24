@@ -1,7 +1,6 @@
-package com.trip.server.dto;
+package com.trip.server.dto.place;
 
 import com.trip.server.model.Identifiable;
-import com.trip.server.model.OsmIdentifiable;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,7 +11,7 @@ import org.springframework.lang.Nullable;
 @AllArgsConstructor
 @NoArgsConstructor(force = true)
 @Schema(description = "Место")
-public class PlaceDto implements Identifiable, OsmIdentifiable {
+public class PlaceDto implements Identifiable {
 
     @Schema(
             description = "ID в базе данных приложения",
@@ -21,22 +20,29 @@ public class PlaceDto implements Identifiable, OsmIdentifiable {
     private Long id;
 
     @Schema(
+            description = "ID города, в котором находится данное место",
+            example = "67"
+    )
+    private Long cityId;
+
+    @Schema(
             description = "ID изображения в базе данных",
-            example = "2"
+            example = "2",
+            nullable = true
     )
     @Nullable
     private Long imageId;
 
     @Schema(
-            description = "ID в базе данных OSM",
-            example = "W23946365"
+            description = "Тип",
+            example = "building"
     )
-    @Nullable
-    private String osmId;
+    private String type;
 
     @Schema(
             description = "Название",
-            example = "Океан"
+            example = "Океан",
+            nullable = true
     )
     @Nullable
     private String name;

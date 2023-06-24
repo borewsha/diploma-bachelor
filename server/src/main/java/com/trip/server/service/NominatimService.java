@@ -25,7 +25,7 @@ public class NominatimService {
 
     private final NominatimClient nominatimClient;
 
-    public Map<String, Address> lookupByObjects(List<? extends OsmIdentifiable> osmObjects) {
+    public Map<String, Address> lookupByOsmIdentifiable(List<? extends OsmIdentifiable> osmObjects) {
         var osmIds = osmObjects.stream()
                 .map(OsmIdentifiable::getOsmId)
                 .toList();

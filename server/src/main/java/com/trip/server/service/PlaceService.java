@@ -1,15 +1,16 @@
 package com.trip.server.service;
 
+import com.trip.server.database.entity.City;
 import com.trip.server.database.entity.Place;
 import com.trip.server.database.repository.PlaceRepository;
 import com.trip.server.exception.NotFoundException;
+import com.trip.server.model.PlacePatchModel;
 import com.trip.server.overpass.model.GeoFilters;
 import com.trip.server.util.PageUtil;
 import com.trip.server.util.TextUtil;
 import fr.dudie.nominatim.model.Element;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.text.similarity.FuzzyScore;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +20,6 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -34,82 +34,102 @@ public class PlaceService {
 
     private final ModelMapper modelMapper;
 
-    private final FuzzyScore score;
+    public Place getById(Long id) {
+        return placeRepository.findById(id)
+                .orElseThrow(PlaceService::getNotFoundException);
+    }
 
-    public Page<Place> getBuildings(String city, @Nullable String search, Pageable pageable) {
-        var buildings = overpassPlaceRepository.findBuildingsByCity(city);
+    public List<Place> getByIds(List<Long> ids) {
+        var places = placeRepository.findByIdIn(ids);
 
-        if (search != null && !search.isBlank()) {
-            buildings.sort(getSimilarityComparator(search));
+        if (ids.size() != places.size()) {
+            var placesIds = places.stream()
+                    .map(Place::getId)
+                    .toList();
+            var unknownIds = ids.stream()
+                    .filter(placesIds::contains)
+                    .map(String::valueOf)
+                    .collect(Collectors.joining(", "));
+            throw new NotFoundException("Места не найдены: " + unknownIds);
         }
 
-        var pagedBuildings = PageUtil.paginate(buildings, pageable);
-        geocodeBuildings(pagedBuildings.getContent());
-
-        return toPagedDatabasePlaces(pagedBuildings);
+        return places;
     }
 
-    public List<Place> getTourism(String city, @Nullable String search, GeoFilters geoFilters) {
-        var tourism = overpassPlaceRepository.findTourismByCity(city, geoFilters);
+    public Page<Place> getByCity(City city, @Nullable String search, Pageable pageable) {
+        var pagedOverpassPlaces = overpassPlaceRepository.findByCity(city.getName(), search, pageable);
+        var pagedDatabasePlaces = toPagedDatabasePlaces(pagedOverpassPlaces, city);
 
-        if (search != null && !search.isBlank()) {
-            tourism.sort(getSimilarityComparator(search));
+        var unsavedPlaces = pagedDatabasePlaces.getContent().stream()
+                .filter(p -> p.getId() == null)
+                .toList();
+        geocode(unsavedPlaces);
+        placeRepository.saveAll(unsavedPlaces);
+
+        return pagedDatabasePlaces;
+    }
+
+    public Page<Place> getBuildingsByCity(City city, @Nullable String search, Pageable pageable) {
+        var pagedOverpassBuildings = overpassPlaceRepository.findBuildingsByCity(city.getName(), search, pageable);
+        var pagedDatabaseBuildings = toPagedDatabasePlaces(pagedOverpassBuildings, city);
+
+        var unsavedBuildings = pagedDatabaseBuildings.getContent().stream()
+                .filter(b -> b.getId() == null)
+                .toList();
+        geocode(unsavedBuildings);
+        placeRepository.saveAll(unsavedBuildings);
+
+        return pagedDatabaseBuildings;
+    }
+
+    public List<Place> getTourismByCity(City city, @Nullable String search, GeoFilters geoFilters) {
+        var listedOverpassTourism = overpassPlaceRepository.findTourismByCity(city.getName(), search, geoFilters);
+        var listedDatabaseTourism = toListedDatabasePlaces(listedOverpassTourism, city);
+
+        var unsavedTourism = listedDatabaseTourism.stream()
+                .filter(t -> t.getId() == null)
+                .toList();
+        geocode(unsavedTourism);
+        placeRepository.saveAll(unsavedTourism);
+
+        return listedDatabaseTourism;
+    }
+
+    public void patch(Long id, PlacePatchModel placePatchModel) {
+        if (placePatchModel.isEmpty()) {
+            return;
+        }
+        var place = getById(id);
+
+        if (placePatchModel.isImageSet()) {
+            place.setImage(placePatchModel.getImage());
         }
 
-        geocodeTourism(tourism);
-
-        return toListOfDatabasePlaces(tourism);
+        placeRepository.save(place);
     }
 
-    private void geocodeBuildings(List<com.trip.server.overpass.entity.Place> buildings) {
-        var lookupResponse = nominatimService.lookupByObjects(buildings);
+    private void geocode(List<Place> places) {
+        var lookupResponse = nominatimService.lookupByOsmIdentifiable(places);
 
-        buildings.forEach(b -> Optional.ofNullable(lookupResponse.get(b.getOsmId()))
+        places.forEach(p -> Optional.ofNullable(lookupResponse.get(p.getOsmId()))
                 .ifPresent(a -> {
-                    b.setLat(a.getLatitude());
-                    b.setLon(a.getLongitude());
-                })
-        );
-    }
-
-    private void geocodeTourism(List<com.trip.server.overpass.entity.Place> tourism) {
-        var lookupResponse = nominatimService.lookupByObjects(tourism);
-
-        tourism.forEach(t -> Optional.ofNullable(lookupResponse.get(t.getOsmId()))
-                .ifPresent(a -> {
-                    if (t.getAddress() == null) {
+                    if (p.getAddress() == null) {
                         Arrays.stream(a.getAddressElements())
                                 .filter(e -> TextUtil.containsCyrillic(e.getValue()))
                                 .filter(e -> e.getKey().equals("road") || e.getKey().equals("city_district"))
                                 .findFirst()
                                 .map(Element::getValue)
-                                .ifPresent(t::setAddress);
+                                .ifPresent(p::setAddress);
                     }
-                    if (t.getLat() == null || t.getLon() == null) {
-                        t.setLat(a.getLatitude());
-                        t.setLon(a.getLongitude());
+                    if (p.getLat() == null || p.getLon() == null) {
+                        p.setLat(a.getLatitude());
+                        p.setLon(a.getLongitude());
                     }
                 })
         );
     }
 
-    private Page<Place> toPagedDatabasePlaces(Page<com.trip.server.overpass.entity.Place> overpassPlaces) {
-        var osmIds = overpassPlaces.stream()
-                .map(com.trip.server.overpass.entity.Place::getOsmId)
-                .toList();
-        var places = placeRepository.findByOsmIdIn(osmIds).stream()
-                .collect(Collectors.toMap(Place::getOsmId, Function.identity()));
-        var databasePlaces = overpassPlaces.stream()
-                .map(p -> modelMapper.map(p, Place.class))
-                .peek(p -> Optional.ofNullable(places.get(p.getOsmId()))
-                        .ifPresent(db -> p.setId(db.getId()))
-                )
-                .toList();
-
-        return PageUtil.mapContent(overpassPlaces, databasePlaces);
-    }
-
-    private List<Place> toListOfDatabasePlaces(List<com.trip.server.overpass.entity.Place> overpassPlaces) {
+    private List<Place> toListedDatabasePlaces(List<com.trip.server.overpass.entity.Place> overpassPlaces, City city) {
         var osmIds = overpassPlaces.stream()
                 .map(com.trip.server.overpass.entity.Place::getOsmId)
                 .toList();
@@ -117,25 +137,14 @@ public class PlaceService {
                 .collect(Collectors.toMap(Place::getOsmId, Function.identity()));
 
         return overpassPlaces.stream()
-                .map(p -> modelMapper.map(p, Place.class))
-                .peek(p -> Optional.ofNullable(places.get(p.getOsmId()))
-                        .ifPresent(db -> {
-                            p.setId(db.getId());
-                            p.setImage(db.getImage());
-                        })
-                )
+                .map(p -> places.getOrDefault(p.getOsmId(), modelMapper.map(p, Place.class)))
+                .map(c -> c.getId() == null ? c.setCity(city) : c)
                 .toList();
     }
 
-    private Comparator<com.trip.server.overpass.entity.Place> getSimilarityComparator(String search) {
-        var cache = new HashMap<com.trip.server.overpass.entity.Place, Integer>();
-
-        return Comparator.comparing(p -> cache.computeIfAbsent(p, k -> Stream.of(k.getName(), k.getAddress())
-                .filter(Objects::nonNull)
-                .map(data -> -score.fuzzyScore(data, search))
-                .reduce(Integer::sum)
-                .orElse(0)
-        ));
+    private Page<Place> toPagedDatabasePlaces(Page<com.trip.server.overpass.entity.Place> overpassPlaces, City city) {
+        var databasePlaces = toListedDatabasePlaces(overpassPlaces.getContent(), city);
+        return PageUtil.mapContent(overpassPlaces, databasePlaces);
     }
 
     private static NotFoundException getNotFoundException() {

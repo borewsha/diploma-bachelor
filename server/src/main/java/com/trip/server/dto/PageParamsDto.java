@@ -14,14 +14,16 @@ public class PageParamsDto {
 
     @Schema(
             description = "Номер страницы",
-            example = "" + PageUtil.MIN_PAGE
+            example = "" + PageUtil.MIN_PAGE,
+            nullable = true
     )
     @Min(value = PageUtil.MIN_PAGE, message = PageUtil.PAGE_ERROR)
     private Integer page = PageUtil.MIN_PAGE;
 
     @Schema(
             description = "Размер страницы (количество элементов)",
-            example = "" + PageUtil.MAX_SIZE
+            example = "" + PageUtil.MAX_SIZE,
+            nullable = true
     )
     @Min(value = PageUtil.MIN_SIZE, message = PageUtil.SIZE_ERROR)
     private Integer size = PageUtil.MAX_SIZE;

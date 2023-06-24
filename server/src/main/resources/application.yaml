@@ -43,3 +43,18 @@ logging:
     root: ${LOGGING_ROOT_LEVEL:INFO}
     com:
       trip: ${LOGGING_TRIP_LEVEL:INFO}
+
+javax:
+  validation:
+    constraints:
+      Max.message: 'должно быть меньше или равно {value}'
+      Min.message: 'должно быть больше или равно {value}'
+      NotBlank.message: 'не должно быть пустым'
+      NotEmpty.message: 'не должно быть пустым'
+      NotNull.message: 'не должно быть не заполненным'
+      Null.message: 'не должно быть заполненным'
+      Past.message: 'дата должна быть в прошлом'
+      PastOrPresent.message: 'дата должна быть в прошлом или настоящем'
+      Positive.message: 'должно быть больше 0'
+      PositiveOrZero.message: 'должно быть больше или равно 0'
+      Size.message: 'размер должен быть от {min} до {max} включительно'

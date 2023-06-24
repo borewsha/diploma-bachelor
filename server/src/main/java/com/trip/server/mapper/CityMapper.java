@@ -1,7 +1,7 @@
 package com.trip.server.mapper;
 
 import com.trip.server.database.entity.City;
-import com.trip.server.dto.CityDto;
+import com.trip.server.dto.city.CityDto;
 import com.trip.server.overpass.model.Element;
 import org.modelmapper.ModelMapper;
 import org.springframework.lang.Nullable;
@@ -30,7 +30,6 @@ public class CityMapper implements Mapper {
             return new CityDto(
                     city.getId(),
                     getImageId(city),
-                    city.getOsmId(),
                     city.getName(),
                     city.getRegion(),
                     city.getLat(),
@@ -39,27 +38,27 @@ public class CityMapper implements Mapper {
         });
     }
 
-    private String getOsmId(Element element) {
+    public static String getOsmId(Element element) {
         return element.getType().getPrefixedId(element.getId());
     }
 
-    private String getName(Element element) {
+    public static String getName(Element element) {
         return element.getTags().get("name");
     }
 
     @Nullable
-    private String getRegion(Element element) {
+    public static String getRegion(Element element) {
         return element.getTags().getOrDefault("addr:region", null);
     }
 
-    private Integer getPopulation(Element element) {
+    public static Integer getPopulation(Element element) {
         return Optional.ofNullable(element.getTags().get("population"))
                 .map(Integer::parseInt)
                 .orElse(0);
     }
 
     @Nullable
-    private Long getImageId(City city) {
+    public static Long getImageId(City city) {
         return city.getImage() != null ? city.getImage().getId() : null;
     }
 

@@ -1,58 +1,59 @@
 package com.trip.server.overpass.repository;
 
+import com.trip.server.mapper.CityMapper;
 import com.trip.server.overpass.entity.City;
 import com.trip.server.overpass.model.Element;
 import com.trip.server.overpass.query.Node;
 import com.trip.server.overpass.query.QueryBuilder;
 import com.trip.server.overpass.reader.JsonResponseReader;
+import com.trip.server.util.PageUtil;
 import de.westnordost.osmapi.overpass.OverpassMapDataApi;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.Comparator;
+import java.util.stream.Stream;
 
-@Slf4j
-@RequiredArgsConstructor
 @Component("overpassCityRepository")
-public class CityRepository {
-
-    private final OverpassMapDataApi overpassMapDataApi;
-
-    private final JsonResponseReader jsonResponseReader;
+public class CityRepository extends Repository {
 
     private final ModelMapper modelMapper;
 
     private final QueryBuilder queryBuilder;
 
-    public Optional<City> findById(String id) {
-        var query = queryBuilder.json()
-                .id(id)
-                .out();
-        var response = getResponse(query);
+    private final Comparator<City> populationComparator = Comparator.comparing(c -> -c.getPopulation());
 
-        return response.stream()
-                .map(e -> modelMapper.map(e, City.class))
-                .findFirst();
+    public CityRepository(
+            OverpassMapDataApi overpassMapDataApi,
+            JsonResponseReader apiResponseReader,
+            ModelMapper modelMapper,
+            QueryBuilder queryBuilder
+    ) {
+        super(overpassMapDataApi, apiResponseReader);
+        this.modelMapper = modelMapper;
+        this.queryBuilder = queryBuilder;
     }
 
-    public List<City> findAll() {
+    public Page<City> findAll(@Nullable String search, Pageable pageable) {
         var request = queryBuilder.json()
                 .defaultArea()
-                .set(Node.withTags("place~'city|town'").area())
+                .set(Node.withArea().tags("place~'city|town'"))
                 .out();
-
-        return getResponse(request).stream()
+        var pagedElements = PageUtil.paginate(getResponse(request, search), pageable);
+        var cities = pagedElements.stream()
                 .map(e -> modelMapper.map(e, City.class))
-                .collect(Collectors.toList());
+                .sorted(populationComparator)
+                .toList();
+
+        return PageUtil.mapContent(pagedElements, cities);
     }
 
-    private List<Element> getResponse(String query) {
-        log.debug("Overpass query: {}", query);
-        return overpassMapDataApi.query(query, jsonResponseReader);
+    @Override
+    protected Stream<String> getFilteredFields(Element e) {
+        return Stream.of(CityMapper.getName(e), CityMapper.getRegion(e));
     }
 
 }

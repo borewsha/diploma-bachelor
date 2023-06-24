@@ -2,7 +2,7 @@ package com.trip.server.controller;
 
 import java.io.*;
 
-import com.trip.server.dto.ApiErrorDto;
+import com.trip.server.dto.error.ApiErrorDto;
 import com.trip.server.dto.CreatedDto;
 import com.trip.server.exception.BadRequestException;
 import com.trip.server.service.ImageService;

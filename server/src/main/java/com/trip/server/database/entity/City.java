@@ -1,10 +1,7 @@
 package com.trip.server.database.entity;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeId;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.trip.server.model.Identifiable;
+import com.trip.server.model.OsmIdentifiable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,7 +17,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Accessors(chain = true)
 @Entity(name = "city")
-public class City implements Identifiable {
+public class City implements Identifiable, OsmIdentifiable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

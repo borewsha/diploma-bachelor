@@ -9,7 +9,7 @@ import lombok.experimental.Accessors;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
 @Builder
@@ -37,10 +37,8 @@ public class Trip implements Identifiable {
     @JoinColumn(name = "accommodation_id")
     private Place accommodation;
 
-    @Nullable
-    private Date startsAt;
+    private LocalDate startsAt;
 
-    @Nullable
-    private Date endsAt;
+    private LocalDate endsAt;
 
 }

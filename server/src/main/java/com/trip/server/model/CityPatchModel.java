@@ -1,22 +1,22 @@
 package com.trip.server.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.trip.server.database.entity.Image;
 import lombok.*;
 import org.springframework.lang.Nullable;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor(force = true)
-public class CityPatch implements Patch {
+public class CityPatchModel implements Patchable {
 
     @Nullable
-    private Long imageId;
+    private Image image;
 
-    @JsonIgnore
-    private boolean imageIdSet;
+    private boolean imageSet;
 
     @Override
     public Boolean isEmpty() {
-        return !isImageIdSet();
+        return !isImageSet();
     }
+
 }

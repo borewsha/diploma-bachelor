@@ -12,4 +12,8 @@ public final class TimeUtil {
         return DateTimeFormatter.ISO_INSTANT.format(temporalAccessor);
     }
 
+    public static String getFormattedLocalDate(TemporalAccessor temporalAccessor) {
+        return DateTimeFormatter.ISO_DATE.format(temporalAccessor);
+    }
+
 }

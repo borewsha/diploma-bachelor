@@ -2,7 +2,13 @@ package com.trip.server.controller;
 
 import javax.validation.*;
 
-import com.trip.server.dto.*;
+import com.trip.server.dto.error.ApiErrorDto;
+import com.trip.server.dto.error.InvalidFieldsDto;
+import com.trip.server.dto.CreatedDto;
+import com.trip.server.dto.security.JwtDto;
+import com.trip.server.dto.security.LoginDto;
+import com.trip.server.dto.security.RefreshTokenDto;
+import com.trip.server.dto.security.RegistrationDto;
 import com.trip.server.service.*;
 import io.swagger.v3.oas.annotations.*;
 import io.swagger.v3.oas.annotations.media.*;

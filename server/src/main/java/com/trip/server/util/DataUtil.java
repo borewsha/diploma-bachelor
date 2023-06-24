@@ -1,7 +1,7 @@
 package com.trip.server.util;
 
 import com.trip.server.dto.DataDto;
-import com.trip.server.dto.GeoFilterParamsDto;
+import com.trip.server.dto.GeoFiltersParamsDto;
 import com.trip.server.overpass.model.GeoFilters;
 import lombok.experimental.UtilityClass;
 import org.modelmapper.ModelMapper;
@@ -21,7 +21,7 @@ public final class DataUtil {
                 .build();
     }
 
-    public static GeoFilters filters(GeoFilterParamsDto geoFilterParamsDto) {
+    public static GeoFilters filters(GeoFiltersParamsDto geoFilterParamsDto) {
         return new GeoFilters(geoFilterParamsDto.getBbox(), geoFilterParamsDto.getRadius());
     }
 

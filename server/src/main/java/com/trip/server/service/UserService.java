@@ -6,6 +6,8 @@ import com.trip.server.database.entity.User;
 import com.trip.server.database.repository.UserRepository;
 import com.trip.server.exception.*;
 import lombok.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.*;
 import org.springframework.stereotype.*;
 
@@ -26,11 +28,23 @@ public class UserService {
                 .orElseThrow(UserService::getNotFoundException);
     }
 
-    public User getFromSecurityContextHolder() {
+    public Page<User> getAll(Pageable pageable) {
+        return userRepository.findAll(pageable);
+    }
+
+    public Long getCurrentUserId() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         var principal = (String) authentication.getPrincipal();
-        var userId = Long.parseLong(principal);
-        return getById(userId);
+
+        if (principal.equals("anonymousUser")) {
+            throw new UnauthorizedException("Не выполнен вход");
+        }
+
+        return Long.parseLong(principal);
+    }
+
+    public User getCurrentUser() {
+        return getById(getCurrentUserId());
     }
 
     public Long register(String username, String password, String fullName) {
@@ -48,15 +62,6 @@ public class UserService {
         userCredentialService.createCredential(user, username, password);
 
         return user.getId();
-    }
-
-    /**
-     * @param user  Пользователь
-     * @param other Пользователь, относительно которого сравниваются привилегии
-     * @return имеет ли пользователь user более высокие привилегии, чем пользователь other
-     */
-    public Boolean hasHigherPrivileges(User user, User other) {
-        return UserRoleService.isAdmin(user) && UserRoleService.isUser(other);
     }
 
     private static NotFoundException getNotFoundException() {

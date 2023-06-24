@@ -1,0 +1,3 @@
+ALTER TABLE trip
+    ALTER COLUMN starts_at TYPE DATE,
+    ALTER COLUMN ends_at TYPE DATE;

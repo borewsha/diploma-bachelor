@@ -1,9 +1,14 @@
 package com.trip.server.controller;
 
-import com.trip.server.dto.*;
-import com.trip.server.model.CityPatch;
-import com.trip.server.provider.IdentificationProvider;
+import com.trip.server.dto.city.CityDto;
+import com.trip.server.dto.city.CityPatchDto;
+import com.trip.server.dto.error.ApiErrorDto;
+import com.trip.server.dto.error.InvalidFieldsDto;
+import com.trip.server.dto.PageDto;
+import com.trip.server.dto.PageParamsDto;
+import com.trip.server.model.CityPatchModel;
 import com.trip.server.service.CityService;
+import com.trip.server.service.ImageService;
 import com.trip.server.util.PageUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -15,6 +20,7 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +37,8 @@ public class CityController extends ApiController {
     private final ModelMapper modelMapper;
 
     private final CityService cityService;
+
+    private final ImageService imageService;
 
     @Operation(summary = "Список городов, отсортированный по населению")
     @ApiResponses(value = {
@@ -56,6 +64,26 @@ public class CityController extends ApiController {
         return new ResponseEntity<>(pageDto, HttpStatus.OK);
     }
 
+    @Operation(summary = "Поиск города")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Данные о городе успешно отданы"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Город не найден",
+                    content = @Content(schema = @Schema(implementation = ApiErrorDto.class))
+            )
+    })
+    @GetMapping("/{id}")
+    public ResponseEntity<CityDto> getById(@PathVariable Long id) {
+        var city = cityService.getById(id);
+        var cityDto = modelMapper.map(city, CityDto.class);
+
+        return new ResponseEntity<>(cityDto, HttpStatus.OK);
+    }
+
     @Operation(summary = "Обновить данные о городе")
     @ApiResponses(value = {
             @ApiResponse(
@@ -66,24 +94,34 @@ public class CityController extends ApiController {
                     responseCode = "400",
                     description = "Некоторые поля не прошли валидацию",
                     content = @Content(schema = @Schema(implementation = InvalidFieldsDto.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = """
+                            Возможные ошибки:
+                            - Город не найден
+                            - Изображение не найдено
+                            """,
+                    content = @Content(schema = @Schema(implementation = ApiErrorDto.class))
             )
     })
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
             content = @Content(
                     schema = @Schema(
-                            implementation = CityPatch.class
+                            implementation = CityPatchDto.class
                     )
             )
     )
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PatchMapping("/{id}")
-    public ResponseEntity<?> patch(
-            @PathVariable String id,
-            @RequestParam(required = false) IdentificationProvider provider,
-            @RequestBody Map<String, Object> body
-    ) {
-        var cityPatch = modelMapper.map(body, CityPatch.class);
-        cityPatch.setImageIdSet(body.containsKey("imageId"));
-        cityService.patch(id, provider, cityPatch);
+    public ResponseEntity<?> patch(@PathVariable Long id, @RequestBody Map<String, Object> body) {
+        var cityPatchDto = modelMapper.map(body, CityPatchDto.class);
+        var cityPatchModel = modelMapper.map(cityPatchDto, CityPatchModel.class);
+        if (body.containsKey("imageId")) {
+            cityPatchModel.setImage(imageService.getById(cityPatchDto.getImageId()));
+        }
+
+        cityService.patch(id, cityPatchModel);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

@@ -3,12 +3,10 @@ package com.trip.server.service;
 import com.trip.server.database.entity.City;
 import com.trip.server.exception.NotFoundException;
 import com.trip.server.database.repository.CityRepository;
-import com.trip.server.model.CityPatch;
-import com.trip.server.provider.IdentificationProvider;
+import com.trip.server.model.CityPatchModel;
 import com.trip.server.util.PageUtil;
 import fr.dudie.nominatim.model.Element;
 import lombok.AllArgsConstructor;
-import org.apache.commons.text.similarity.FuzzyScore;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @AllArgsConstructor
@@ -28,70 +25,43 @@ public class CityService {
 
     private final com.trip.server.overpass.repository.CityRepository overpassCityRepository;
 
-    private final ImageService imageService;
-
     private final NominatimService nominatimService;
 
     private final ModelMapper modelMapper;
 
-    private final FuzzyScore score;
-
-    private final Comparator<com.trip.server.overpass.entity.City> populationComparator = Comparator.comparing(c -> -c.getPopulation());
-
-    public City getById(String id, @Nullable IdentificationProvider provider) {
-        if (provider == IdentificationProvider.OSM) {
-            return cityRepository.findByOsmId(id)
-                    .orElseThrow(CityService::getNotFoundException);
-        }
-
-        return cityRepository.findById(Long.parseLong(id))
+    public City getById(Long id) {
+        return cityRepository.findById(id)
                 .orElseThrow(CityService::getNotFoundException);
     }
 
     public Page<City> getAll(@Nullable String search, Pageable pageable) {
-        var overpassCities = overpassCityRepository.findAll();
+        var pagedOverpassCities = overpassCityRepository.findAll(search, pageable);
+        var pagedDatabaseCities = toPagedDatabaseCities(pagedOverpassCities);
 
-        var comparator = search == null || search.isBlank() ? populationComparator : getSimilarityComparator(search);
-        overpassCities.sort(comparator);
+        var unsavedCities = pagedDatabaseCities.getContent().stream()
+                .filter(c -> c.getId() == null)
+                .toList();
+        geocode(unsavedCities);
+        cityRepository.saveAll(unsavedCities);
 
-        var pagedOverpassCities = PageUtil.paginate(overpassCities, pageable);
-        geocode(pagedOverpassCities.getContent());
-
-        return toPagedDatabaseCities(pagedOverpassCities);
+        return pagedDatabaseCities;
     }
 
-    public void patch(String id, @Nullable IdentificationProvider provider, CityPatch patch) {
-        if (patch.isEmpty()) {
+    public void patch(Long id, CityPatchModel cityPatchModel) {
+        if (cityPatchModel.isEmpty()) {
             return;
         }
-        var city = getEntity(id, provider);
+        var city = getById(id);
 
-        if (patch.isImageIdSet()) {
-            var image = imageService.getById(patch.getImageId());
-            city.setImage(image);
+        if (cityPatchModel.isImageSet()) {
+            city.setImage(cityPatchModel.getImage());
         }
 
         cityRepository.save(city);
     }
 
-    private City getEntity(String id, @Nullable IdentificationProvider provider) {
-        try {
-            return getById(id, provider);
-        } catch (NotFoundException e) {
-            if (provider == IdentificationProvider.OSM) {
-                return overpassCityRepository.findById(id).stream()
-                        .peek(c -> geocode(List.of(c)))
-                        .map(c -> modelMapper.map(c, City.class))
-                        .findFirst()
-                        .orElseThrow(CityService::getNotFoundException);
-            }
-        }
-
-        throw getNotFoundException();
-    }
-
-    private void geocode(List<com.trip.server.overpass.entity.City> cities) {
-        var lookupResponse = nominatimService.lookupByObjects(cities);
+    private void geocode(List<City> cities) {
+        var lookupResponse = nominatimService.lookupByOsmIdentifiable(cities);
 
         cities.forEach(c -> Optional.ofNullable(lookupResponse.get(c.getOsmId()))
                 .flatMap(a -> Arrays.stream(a.getAddressElements())
@@ -103,34 +73,21 @@ public class CityService {
         );
     }
 
-    private Page<City> toPagedDatabaseCities(Page<com.trip.server.overpass.entity.City> overpassCities) {
+    private List<City> toListedDatabaseCities(List<com.trip.server.overpass.entity.City> overpassCities) {
         var osmIds = overpassCities.stream()
                 .map(com.trip.server.overpass.entity.City::getOsmId)
                 .toList();
         var cities = cityRepository.findByOsmIdIn(osmIds).stream()
                 .collect(Collectors.toMap(City::getOsmId, Function.identity()));
-        var databaseCities = overpassCities.stream()
-                .map(c -> modelMapper.map(c, City.class))
-                .peek(c -> Optional.ofNullable(cities.get(c.getOsmId()))
-                        .ifPresent(db -> {
-                            c.setId(db.getId());
-                            c.setImage(db.getImage());
-                        })
-                )
-                .toList();
 
-        return PageUtil.mapContent(overpassCities, databaseCities);
+        return overpassCities.stream()
+                .map(c -> cities.getOrDefault(c.getOsmId(), modelMapper.map(c, City.class)))
+                .toList();
     }
 
-    private Comparator<com.trip.server.overpass.entity.City> getSimilarityComparator(String search) {
-        var cache = new HashMap<com.trip.server.overpass.entity.City, Integer>();
-
-        return Comparator.comparing(c -> cache.computeIfAbsent(c, k -> Stream.of(k.getName(), k.getRegion())
-                .filter(Objects::nonNull)
-                .map(s -> -score.fuzzyScore(s, search))
-                .reduce(Integer::sum)
-                .orElse(0)
-        ));
+    private Page<City> toPagedDatabaseCities(Page<com.trip.server.overpass.entity.City> overpassCities) {
+        var databaseCities = toListedDatabaseCities(overpassCities.getContent());
+        return PageUtil.mapContent(overpassCities, databaseCities);
     }
 
     private static NotFoundException getNotFoundException() {

@@ -1,0 +1,6 @@
+DELETE
+FROM place;
+
+ALTER TABLE place
+    ADD COLUMN city_id BIGINT NOT NULL default 0,
+    ADD CONSTRAINT FK_PLACE_ON_CITY FOREIGN KEY (city_id) REFERENCES city (id);

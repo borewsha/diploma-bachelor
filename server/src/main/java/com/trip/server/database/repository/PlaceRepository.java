@@ -12,4 +12,6 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
 
     List<Place> findByOsmIdIn(Collection<String> osmIds);
 
+    List<Place> findByIdIn(Collection<Long> ids);
+
 }

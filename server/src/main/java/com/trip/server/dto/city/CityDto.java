@@ -1,4 +1,4 @@
-package com.trip.server.dto;
+package com.trip.server.dto.city;
 
 import com.trip.server.model.Identifiable;
 import com.trip.server.model.OsmIdentifiable;
@@ -10,28 +10,21 @@ import org.springframework.lang.*;
 @AllArgsConstructor
 @NoArgsConstructor(force = true)
 @Schema(description = "Город")
-public class CityDto implements Identifiable, OsmIdentifiable {
+public class CityDto implements Identifiable {
 
     @Schema(
         description = "ID в базе данных приложения",
         example = "1"
     )
-    @Nullable
     private Long id;
 
     @Schema(
             description = "ID изображения в базе данных",
-            example = "2"
+            example = "2",
+            nullable = true
     )
     @Nullable
     private Long imageId;
-
-    @Schema(
-            description = "ID в базе данных OSM",
-            example = "N23565445"
-    )
-    @Nullable
-    private String osmId;
 
     @Schema(
             description = "Название",

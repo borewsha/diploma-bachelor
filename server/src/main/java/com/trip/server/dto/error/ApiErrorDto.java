@@ -1,4 +1,4 @@
-package com.trip.server.dto;
+package com.trip.server.dto.error;
 
 import io.swagger.v3.oas.annotations.media.*;
 import lombok.*;

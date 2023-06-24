@@ -1,75 +1,90 @@
 package com.trip.server.overpass.repository;
 
-import com.trip.server.database.enumeration.PlaceType;
+import com.trip.server.mapper.PlaceMapper;
 import com.trip.server.overpass.entity.Place;
 import com.trip.server.overpass.model.Element;
 import com.trip.server.overpass.model.GeoFilters;
 import com.trip.server.overpass.query.*;
 import com.trip.server.overpass.reader.JsonResponseReader;
+import com.trip.server.util.PageUtil;
 import de.westnordost.osmapi.overpass.OverpassMapDataApi;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.*;
+import java.util.stream.Stream;
 
-@Slf4j
-@RequiredArgsConstructor
 @Component("overpassPlaceRepository")
-public class PlaceRepository {
-
-    private final OverpassMapDataApi overpassMapDataApi;
-
-    private final JsonResponseReader jsonResponseReader;
+public class PlaceRepository extends Repository {
 
     private final ModelMapper modelMapper;
 
     private final QueryBuilder queryBuilder;
 
-    public Optional<Place> findById(String id) {
-        var query = queryBuilder.json()
-                .id(id)
-                .out();
-        var response = getResponse(query);
-
-        return response.stream()
-                .map(e -> modelMapper.map(e, Place.class))
-                .findFirst();
+    public PlaceRepository(
+            OverpassMapDataApi overpassMapDataApi,
+            JsonResponseReader apiResponseReader,
+            ModelMapper modelMapper,
+            QueryBuilder queryBuilder
+    ) {
+        super(overpassMapDataApi, apiResponseReader);
+        this.modelMapper = modelMapper;
+        this.queryBuilder = queryBuilder;
     }
 
-    public List<Place> findBuildingsByCity(String city) {
+    public Page<Place> findByCity(String city, @Nullable String search, Pageable pageable) {
         var request = queryBuilder.json()
                 .area(Area.withTags("place~'city|town'", "name='" + city + "'"))
-                .set(Way.withTags("building", "'addr:street'", "'addr:housenumber'").area())
-                .out();
-
-        return getResponse(request).stream()
-                .map(e -> modelMapper.map(e, Place.class, PlaceType.BUILDING.name()))
-                .collect(Collectors.toList());
-    }
-
-    public List<Place> findTourismByCity(String city, GeoFilters filters) {
-        var request = queryBuilder.json()
-                .boundingBox(filters.getBbox())
-                .area(Area.withTags("place~'city|town'", "name='" + city + "'"))
-                .set(NodeWay.withTags(
+                .set(Way.withArea().tags("building", "'addr:street'", "'addr:housenumber'"))
+                .set(NodeWay.withArea().tags(
                         "tourism",
                         "tourism!~'^(hotel|hostel|information|apartment|guest_house)$'",
                         "~'^(name|description)$'~'.'"
-                ).area())
+                ))
                 .out();
+        var pagedElements = PageUtil.paginate(getResponse(request, search), pageable);
+        var places = pagedElements.stream()
+                .map(e -> modelMapper.map(e, Place.class))
+                .toList();
 
-        return getResponse(request).stream()
-                .map(e -> modelMapper.map(e, Place.class, PlaceType.TOURISM.name()))
-                .collect(Collectors.toList());
+        return PageUtil.mapContent(pagedElements, places);
     }
 
-    private List<Element> getResponse(String query) {
-        log.debug("Overpass query: {}", query);
-        return overpassMapDataApi.query(query, jsonResponseReader);
+    public Page<Place> findBuildingsByCity(String city, @Nullable String search, Pageable pageable) {
+        var request = queryBuilder.json()
+                .area(Area.withTags("place~'city|town'", "name='" + city + "'"))
+                .set(Way.withArea().tags("building", "'addr:street'", "'addr:housenumber'"))
+                .out();
+        var pagedElements = PageUtil.paginate(getResponse(request, search), pageable);
+        var buildings = pagedElements.stream()
+                .map(e -> modelMapper.map(e, Place.class))
+                .toList();
+
+        return PageUtil.mapContent(pagedElements, buildings);
+    }
+
+    public List<Place> findTourismByCity(String city, @Nullable String search, GeoFilters filters) {
+        var request = queryBuilder.json()
+                .boundingBox(filters.getBbox())
+                .area(Area.withTags("place~'city|town'", "name='" + city + "'"))
+                .set(NodeWay.withArea().tags(
+                        "tourism",
+                        "tourism!~'^(hotel|hostel|information|apartment|guest_house)$'",
+                        "~'^(name|description)$'~'.'"
+                ))
+                .out();
+
+        return getResponse(request, search).stream()
+                .map(e -> modelMapper.map(e, Place.class))
+                .toList();
+    }
+
+    @Override
+    protected Stream<String> getFilteredFields(Element e) {
+        return Stream.of(PlaceMapper.getName(e), PlaceMapper.getAddress(e));
     }
 
 }

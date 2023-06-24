@@ -13,7 +13,8 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-@Entity(name = "\"user\"")
+@Table(name = "\"user\"")
+@Entity(name = "user")
 public class User implements Identifiable {
 
     @Id

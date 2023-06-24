@@ -2,6 +2,7 @@ package com.trip.server.database.entity;
 
 import com.trip.server.database.enumeration.PlaceType;
 import com.trip.server.model.Identifiable;
+import com.trip.server.model.OsmIdentifiable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,12 +18,16 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Accessors(chain = true)
 @Entity(name = "place")
-public class Place implements Identifiable {
+public class Place implements Identifiable, OsmIdentifiable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "city_id")
+    private City city;
 
     @ManyToOne
     @JoinColumn(name = "image_id")

@@ -1,4 +1,4 @@
-package com.trip.server.dto;
+package com.trip.server.dto.security;
 
 import javax.validation.constraints.*;
 

@@ -16,9 +16,9 @@ public class UserCredentialService {
 
     private PasswordEncoder passwordEncoder;
 
-    private RefreshTokenService refreshTokenService;
-
     private UserCredentialRepository userCredentialRepository;
+
+    private RefreshTokenService refreshTokenService;
 
     public UserCredential getByUsername(String username) {
         return userCredentialRepository.findByUsername(username)

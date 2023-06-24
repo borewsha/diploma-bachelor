@@ -41,7 +41,8 @@ public class TripMapper implements Mapper {
                             null,
                             null,
                             getStartsAt(tripCreationDto.getDates()),
-                            getEndsAt(tripCreationDto.getDates())
+                            getEndsAt(tripCreationDto.getDates()),
+                            null
                     );
                 });
     }

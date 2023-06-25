@@ -12,6 +12,8 @@ import fr.dudie.nominatim.model.Element;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.Nullable;
@@ -47,7 +49,7 @@ public class PlaceService {
                     .map(Place::getId)
                     .toList();
             var unknownIds = ids.stream()
-                    .filter(placesIds::contains)
+                    .filter(id -> !placesIds.contains(id))
                     .map(String::valueOf)
                     .collect(Collectors.joining(", "));
             throw new NotFoundException("Места не найдены: " + unknownIds);
@@ -56,6 +58,7 @@ public class PlaceService {
         return places;
     }
 
+    @Cacheable(cacheNames = "placesCache", key = "{#city, #search, #pageable}")
     public Page<Place> getByCity(City city, @Nullable String search, Pageable pageable) {
         var pagedOverpassPlaces = overpassPlaceRepository.findByCity(city.getName(), search, pageable);
         var pagedDatabasePlaces = toPagedDatabasePlaces(pagedOverpassPlaces, city);
@@ -69,6 +72,7 @@ public class PlaceService {
         return pagedDatabasePlaces;
     }
 
+    @Cacheable(cacheNames = "placesCache", key = "{#city, #search, #pageable}")
     public Page<Place> getBuildingsByCity(City city, @Nullable String search, Pageable pageable) {
         var pagedOverpassBuildings = overpassPlaceRepository.findBuildingsByCity(city.getName(), search, pageable);
         var pagedDatabaseBuildings = toPagedDatabasePlaces(pagedOverpassBuildings, city);
@@ -82,6 +86,7 @@ public class PlaceService {
         return pagedDatabaseBuildings;
     }
 
+    @Cacheable(cacheNames = "placesCache", key = "{#city, #search, #geoFilters}")
     public List<Place> getTourismByCity(City city, @Nullable String search, GeoFilters geoFilters) {
         var listedOverpassTourism = overpassPlaceRepository.findTourismByCity(city.getName(), search, geoFilters);
         var listedDatabaseTourism = toListedDatabasePlaces(listedOverpassTourism, city);
@@ -95,6 +100,7 @@ public class PlaceService {
         return listedDatabaseTourism;
     }
 
+    @CacheEvict(cacheNames = "placesCache", allEntries = true)
     public void patch(Long id, PlacePatchModel placePatchModel) {
         if (placePatchModel.isEmpty()) {
             return;

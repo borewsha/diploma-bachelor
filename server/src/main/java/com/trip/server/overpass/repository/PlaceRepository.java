@@ -1,13 +1,12 @@
 package com.trip.server.overpass.repository;
 
 import com.trip.server.mapper.PlaceMapper;
+import com.trip.server.overpass.Connector;
 import com.trip.server.overpass.entity.Place;
 import com.trip.server.overpass.model.Element;
 import com.trip.server.overpass.model.GeoFilters;
 import com.trip.server.overpass.query.*;
-import com.trip.server.overpass.reader.JsonResponseReader;
 import com.trip.server.util.PageUtil;
-import de.westnordost.osmapi.overpass.OverpassMapDataApi;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,13 +23,8 @@ public class PlaceRepository extends Repository {
 
     private final QueryBuilder queryBuilder;
 
-    public PlaceRepository(
-            OverpassMapDataApi overpassMapDataApi,
-            JsonResponseReader apiResponseReader,
-            ModelMapper modelMapper,
-            QueryBuilder queryBuilder
-    ) {
-        super(overpassMapDataApi, apiResponseReader);
+    public PlaceRepository(Connector connector, ModelMapper modelMapper, QueryBuilder queryBuilder) {
+        super(connector);
         this.modelMapper = modelMapper;
         this.queryBuilder = queryBuilder;
     }

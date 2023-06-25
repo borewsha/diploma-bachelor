@@ -8,6 +8,8 @@ import com.trip.server.util.PageUtil;
 import fr.dudie.nominatim.model.Element;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.Nullable;
@@ -34,6 +36,7 @@ public class CityService {
                 .orElseThrow(CityService::getNotFoundException);
     }
 
+    @Cacheable(cacheNames = "citiesCache", key = "{#search, #pageable}")
     public Page<City> getAll(@Nullable String search, Pageable pageable) {
         var pagedOverpassCities = overpassCityRepository.findAll(search, pageable);
         var pagedDatabaseCities = toPagedDatabaseCities(pagedOverpassCities);
@@ -47,6 +50,7 @@ public class CityService {
         return pagedDatabaseCities;
     }
 
+    @CacheEvict(cacheNames = "citiesCache", allEntries = true)
     public void patch(Long id, CityPatchModel cityPatchModel) {
         if (cityPatchModel.isEmpty()) {
             return;

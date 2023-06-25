@@ -1,13 +1,12 @@
 package com.trip.server.overpass.repository;
 
 import com.trip.server.mapper.CityMapper;
+import com.trip.server.overpass.Connector;
 import com.trip.server.overpass.entity.City;
 import com.trip.server.overpass.model.Element;
 import com.trip.server.overpass.query.Node;
 import com.trip.server.overpass.query.QueryBuilder;
-import com.trip.server.overpass.reader.JsonResponseReader;
 import com.trip.server.util.PageUtil;
-import de.westnordost.osmapi.overpass.OverpassMapDataApi;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,13 +25,8 @@ public class CityRepository extends Repository {
 
     private final Comparator<City> populationComparator = Comparator.comparing(c -> -c.getPopulation());
 
-    public CityRepository(
-            OverpassMapDataApi overpassMapDataApi,
-            JsonResponseReader apiResponseReader,
-            ModelMapper modelMapper,
-            QueryBuilder queryBuilder
-    ) {
-        super(overpassMapDataApi, apiResponseReader);
+    public CityRepository(Connector connector, ModelMapper modelMapper, QueryBuilder queryBuilder) {
+        super(connector);
         this.modelMapper = modelMapper;
         this.queryBuilder = queryBuilder;
     }

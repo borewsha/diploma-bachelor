@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
@@ -176,8 +177,12 @@ public class PlaceController extends ApiController {
     public ResponseEntity<?> patch(@PathVariable Long id, @RequestBody Map<String, Object> body) {
         var placePatchDto = modelMapper.map(body, PlacePatchDto.class);
         var placePatchModel = modelMapper.map(placePatchDto, PlacePatchModel.class);
-        if (body.containsKey("imageId")) {
-            placePatchModel.setImage(imageService.getById(placePatchDto.getImageId()));
+
+        placePatchModel.setImageSet(body.containsKey("imageId"));
+        if (placePatchModel.isImageSet()) {
+            Optional.ofNullable(placePatchDto.getImageId())
+                    .map(imageService::getById)
+                    .ifPresent(placePatchModel::setImage);
         }
 
         placeService.patch(id, placePatchModel);

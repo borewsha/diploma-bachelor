@@ -1,13 +1,13 @@
 package com.trip.server.overpass.repository;
 
+import com.trip.server.overpass.Connector;
 import com.trip.server.overpass.model.Element;
 import com.trip.server.util.TextUtil;
-import de.westnordost.osmapi.ApiResponseReader;
-import de.westnordost.osmapi.overpass.OverpassMapDataApi;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Objects;
@@ -16,17 +16,14 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 @Slf4j
-@RequiredArgsConstructor
+@Component
+@AllArgsConstructor
 public abstract class Repository {
 
-    private final OverpassMapDataApi overpassMapDataApi;
+    private final Connector connector;
 
-    private final ApiResponseReader<List<Element>> apiResponseReader;
-
-    protected List<Element> getResponse(String query, @Nullable String search) {
-        log.debug("Overpass query: {}", query);
-
-        var response = overpassMapDataApi.query(query, apiResponseReader);
+    public List<Element> getResponse(String query, @Nullable String search) {
+        var response = connector.getResponse(query);
 
         return Optional.ofNullable(search)
                 .filter(s -> !s.isBlank())

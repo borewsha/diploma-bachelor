@@ -1,5 +1,5 @@
 import React from 'react'
-import {Form, message, Typography} from 'antd'
+import {DatePicker, Form, message, Typography} from 'antd'
 import 'dayjs/locale/ru'
 import {useAppDispatch, useAppSelector} from 'shared/hooks'
 import {createTravel} from 'features/travelSlice'
@@ -7,16 +7,17 @@ import CitySelect from 'features/createTravel/form/CitySelect'
 import CreateTravelMap from 'widgets/createTravelMap/CreateTravelMap'
 import AccommodationSelect from 'features/createTravel/form/AccommodationSelect'
 import AttractionsSelect from 'features/createTravel/form/AttractionsSelect'
-import DateSelect from '../features/createTravel/form/DateSelect'
-import SendButton from '../features/createTravel/form/SendButton'
+import SendButton from 'features/createTravel/form/SendButton'
+import dayjs from 'dayjs'
 
 const CreateTravel = () => {
     const dispatch = useAppDispatch()
 
-    const isLoading = useAppSelector(state => state.city.isLoading)
+    const city = useAppSelector(state => state.travel.city)
 
     const onFinish = async (data: any) => {
-        await dispatch(createTravel(data))
+        console.log(data)
+        await dispatch(createTravel({city}))
     }
 
     const onFinishFailed = async () => {
@@ -36,48 +37,28 @@ const CreateTravel = () => {
                     <Form.Item
                         name="city"
                         label="Город"
-                        rules={[
-                            {
-                                required: true,
-                                message: 'Заполните поле'
-                            }
-                        ]}
                     >
                         <CitySelect/>
                     </Form.Item>
                     <Form.Item
                         name="dates"
                         label="Даты поездки"
-                        rules={[
-                            {
-                                required: true,
-                                message: 'Заполните поле'
-                            }
-                        ]}
                     >
-                        <DateSelect/>
+                        <DatePicker.RangePicker
+                            style={{width: '100%'}}
+                            placeholder={['Начало', 'Конец']}
+                            disabledDate={date => date < dayjs(new Date()).subtract(1, 'day')}
+                        />
                     </Form.Item>
                     <Form.Item
                         name="accommodation"
                         label="Ночлег"
-                        rules={[
-                            {
-                                required: true,
-                                message: 'Заполните поле'
-                            }
-                        ]}
                     >
                         <AccommodationSelect/>
                     </Form.Item>
                     <Form.Item
                         name="attractions"
                         label="Места для посещения"
-                        rules={[
-                            {
-                                required: true,
-                                message: 'Заполните поле'
-                            }
-                        ]}
                     >
                         <AttractionsSelect/>
                     </Form.Item>

@@ -21,7 +21,7 @@ const TravelDetail = () => {
         return (
             <div className="events">
                 {listData.map((item, index) => (
-                    <li key={item.osmId}>
+                    <li key={item.id}>
                         <Typography.Text
                             ellipsis
                         >{item.name ? item.name + ' (' + item.address + ')' : item.address}

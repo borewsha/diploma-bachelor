@@ -14,7 +14,7 @@ const PlacesClusterGroups: FC<PlacesClusterGroupsState> = ({places}) => {
             {
                 places?.map(place => (
                     <Marker
-                        key={place.osmId}
+                        key={place.id}
                         position={[place.lat, place.lon]}
                         icon={defaultPlaceIcon}
                     >

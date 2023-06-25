@@ -3,17 +3,18 @@ import axios from 'shared/api'
 import {Place} from 'shared/entities'
 
 
-export const buildingsSearch = createAsyncThunk<Place[], { city: string, place: string }>(
+export const buildingsSearch = createAsyncThunk<Place[], { cityId: number, place: string }>(
     'places/buildings/search',
-    async ({place, city}) =>
-        await axios.get(`/places/buildings?page=0&size=30&city=${city}&search=${place}`)
+    async ({place, cityId}) =>
+        await axios.get(`/places/buildings?page=0&size=30&cityId=${cityId}&search=${place}`)
             .then(response => (response.data.data) as Place[])
 )
 
-export const tourismSearch = createAsyncThunk<Place[], { city: string, tourism: string }>(
+export const tourismSearch = createAsyncThunk<Place[], { cityId: number, tourism: string }>(
     'places/tourism/search',
-    async ({tourism, city}) =>
-        await axios.get(`/places/tourism?city=${city}&search=${tourism}`)
+    async ({tourism, cityId}) =>
+        await axios.get(`/places/tourism?cityId=${cityId}&search=${tourism}`)
+            .then(response => (response.data.data) as Place[])
 )
 
 type State = {

@@ -1,15 +1,6 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
 import axios from 'shared/api'
-
-export type City = {
-    id: number,
-    imageId: number,
-    osmId: number,
-    name: string,
-    region: string,
-    lat: number,
-    lon: number
-}
+import {City} from 'shared/entities'
 
 export const searchingCities = createAsyncThunk<City[], string>(
     'cities/search',

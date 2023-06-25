@@ -6,6 +6,7 @@ import MyTravels from './MyTravels'
 import Map from 'entities/Map'
 import CreateTravel from './CreateTravel'
 import TravelDetail from './TravelDetail'
+import MapPage from './MapPage'
 
 const Home = () => {
     const navigate = useNavigate()
@@ -21,7 +22,7 @@ const Home = () => {
         },
         {
             path: '/map',
-            element: <Map/>
+            element: <MapPage/>
         },
         {
             path: '/create',

@@ -5,7 +5,6 @@ import org.springframework.lang.Nullable;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDate;
 import java.util.List;
 
@@ -31,7 +30,7 @@ public class TripDatesValidator implements ConstraintValidator<TripDates, List<?
             return true;
         }
 
-        var now = ChronoLocalDate.from(LocalDateTime.now());
+        var yesterday = ChronoLocalDate.from(LocalDate.now().minusDays(1));
         cxt.disableDefaultConstraintViolation();
 
         if (valueField.size() != 2) {
@@ -46,7 +45,7 @@ public class TripDatesValidator implements ConstraintValidator<TripDates, List<?
             cxt.buildConstraintViolationWithTemplate(INVALID_SEQUENCE).addConstraintViolation();
             return false;
         }
-        if (startsAt.isBefore(now) || endsAt.isBefore(now)) {
+        if (startsAt.isBefore(yesterday) || endsAt.isBefore(yesterday)) {
             cxt.buildConstraintViolationWithTemplate(DATES_AFFECT_THE_PAST).addConstraintViolation();
             return false;
         }

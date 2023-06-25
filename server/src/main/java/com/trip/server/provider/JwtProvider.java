@@ -76,16 +76,16 @@ public class JwtProvider {
                 .getSubject();
             Long.parseLong(subject);
             return true;
-        } catch (ExpiredJwtException expiredJwtException) {
-            log.error("Токен истек", expiredJwtException);
-        } catch (UnsupportedJwtException unsupportedJwtException) {
-            log.error("Неподдерживаемый токен", unsupportedJwtException);
-        } catch (MalformedJwtException malformedJwtException) {
-            log.error("Плохо сформированный токен", malformedJwtException);
-        } catch (SignatureException signatureException) {
-            log.error("Невалидная сигнатура", signatureException);
+        } catch (ExpiredJwtException ignored) {
+            log.debug("Токен истек");
+        } catch (UnsupportedJwtException ignored) {
+            log.debug("Неподдерживаемый токен");
+        } catch (MalformedJwtException ignored) {
+            log.debug("Плохо сформированный токен");
+        } catch (SignatureException ignored) {
+            log.debug("Невалидная сигнатура");
         } catch (Exception e) {
-            log.error("Невалидный токен", e);
+            log.debug("Невалидный токен", e);
         }
         return false;
     }

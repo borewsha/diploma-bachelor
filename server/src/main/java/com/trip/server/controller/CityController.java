@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Map;
+import java.util.Optional;
 
 @Validated
 @AllArgsConstructor
@@ -117,8 +118,12 @@ public class CityController extends ApiController {
     public ResponseEntity<?> patch(@PathVariable Long id, @RequestBody Map<String, Object> body) {
         var cityPatchDto = modelMapper.map(body, CityPatchDto.class);
         var cityPatchModel = modelMapper.map(cityPatchDto, CityPatchModel.class);
-        if (body.containsKey("imageId")) {
-            cityPatchModel.setImage(imageService.getById(cityPatchDto.getImageId()));
+
+        cityPatchModel.setImageSet(body.containsKey("imageId"));
+        if (cityPatchModel.isImageSet()) {
+            Optional.ofNullable(cityPatchDto.getImageId())
+                    .map(imageService::getById)
+                    .ifPresent(cityPatchModel::setImage);
         }
 
         cityService.patch(id, cityPatchModel);

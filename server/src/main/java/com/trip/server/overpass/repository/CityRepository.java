@@ -23,7 +23,7 @@ public class CityRepository extends Repository {
 
     private final QueryBuilder queryBuilder;
 
-    private final Comparator<City> populationComparator = Comparator.comparing(c -> -c.getPopulation());
+    private static final Comparator<City> populationComparator = Comparator.comparing(c -> -c.getPopulation());
 
     public CityRepository(Connector connector, ModelMapper modelMapper, QueryBuilder queryBuilder) {
         super(connector);

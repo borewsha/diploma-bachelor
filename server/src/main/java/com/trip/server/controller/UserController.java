@@ -101,7 +101,7 @@ public class UserController extends ApiController {
                     content = @Content(schema = @Schema(implementation = ApiErrorDto.class))
             )
     })
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') || userAccess.hasRightToView(#id)")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') || @userAccess.hasRightToView(#id)")
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getById(@PathVariable Long id) {
         var user = userService.getById(id);
@@ -127,7 +127,7 @@ public class UserController extends ApiController {
                     content = @Content(schema = @Schema(implementation = ApiErrorDto.class))
             )
     })
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') || userAccess.hasRightToView(#id)")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') || @userAccess.hasRightToView(#id)")
     @GetMapping("/{id}/trips")
     public ResponseEntity<PageDto<TripDto>> getTrips(
             @PathVariable Long id,

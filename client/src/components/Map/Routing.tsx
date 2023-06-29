@@ -61,7 +61,10 @@ const Routing = ({points}) => {
     useEffect(() => {
         if (!map) return
 
+        let routingControls: any[] = []
+
         if (points) {
+            // @ts-ignore
             let routingControl
             for (let i = 0; i < points.length - 1; i++) {
                 if (routeTypes[i % routeTypes.length] === 'car') {
@@ -87,7 +90,8 @@ const Routing = ({points}) => {
                     }).addTo(map)
                 }
                 // @ts-ignore
-                // routingControl._container.style.display = 'None'
+                routingControl._container.style.display = 'None'
+                routingControls.push(routingControl)
             }
 
             // const routingControl = L.Routing.control({
@@ -106,7 +110,8 @@ const Routing = ({points}) => {
             //     // serviceUrl: 'https://routing.openstreetmap.de/routed-foot/route/v1'
             // }).addTo(map)
 
-            // return () => map.removeControl(routingControl)
+            // @ts-ignore
+            return () => routingControls.map(a => map.removeControl(a))
         }
 
     }, [map, points])

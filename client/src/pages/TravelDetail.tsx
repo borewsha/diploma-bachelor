@@ -374,6 +374,19 @@ const TravelDetail = () => {
         )
     }
 
+    fetch('http://api.weatherunlocked.com/api/forecast/43.10562,131.87353?lang=ru&app_id=574f72d9&app_key=cf87cfa8db059c6be1c5543dfd4d7f74')
+        .then(res => res.json())
+        .then(res => res.Days.forEach((day: any) => console.log(`
+            day: ${day.date}
+            temperature: ${day.temp_max_c}C
+            rain: ${day.rain_total_mm}mm
+            rain percent: ${day.prob_precip_pct}%
+            humidity: ${day.humid_max_pct}%
+            wind: ${day.windspd_max_kmh}km/h
+        `)))
+
+    console.log(way)
+
     return (
         <div style={{display: 'flex'}}>
             <div style={{width: '50%', padding: 16}}>

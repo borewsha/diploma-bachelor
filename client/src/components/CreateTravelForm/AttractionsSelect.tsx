@@ -1,10 +1,10 @@
 import React, {useEffect, useMemo} from 'react'
 import {Place} from 'shared/entities'
-import {addPlace, removePlace} from '../../travelSlice'
-import {Select} from 'antd'
+import {addPlace, removePlace} from 'slices/travelSlice'
+import {Form, Select} from 'antd'
 import {useAppDispatch, useAppSelector} from 'shared/hooks'
-import {tourismSearch} from '../../placesSlice'
-import {setCenter} from '../../mapSlice'
+import {tourismSearch} from 'slices/placesSlice'
+import {setCenter} from 'slices/mapSlice'
 import {LatLngExpression} from 'leaflet'
 import debounce from 'lodash.debounce'
 
@@ -14,6 +14,8 @@ const AttractionsSelect = () => {
     const attractions = useAppSelector(state => state.travel.attractions)
     const city = useAppSelector(state => state.travel.city)
     const cities = useAppSelector(state => state.city.data)
+    const isLoading = useAppSelector(state => state.places.isLoading)
+
 
     const attractionSearch = useMemo(
         () => debounce(async (cityId: number, tourism: string) => {
@@ -35,12 +37,19 @@ const AttractionsSelect = () => {
         }
     }, [attractions])
 
+    console.log(attractions)
+
     return (
+        <Form.Item
+            name="attractions"
+            label="Места для посещения"
+        >
         <Select
             showSearch
             mode="multiple"
             placeholder="Начните вводить место..."
             defaultActiveFirstOption={false}
+            loading={isLoading}
             showArrow={false}
             filterOption={false}
             // @ts-ignore
@@ -55,6 +64,7 @@ const AttractionsSelect = () => {
             onDeselect={value => dispatch(removePlace(value))}
             disabled={!cities?.filter(c => c.id === city)[0]}
         />
+        </Form.Item>
     )
 }
 

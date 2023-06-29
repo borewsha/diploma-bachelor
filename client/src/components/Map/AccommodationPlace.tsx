@@ -1,7 +1,7 @@
 import React, {FC} from 'react'
 import {accommodationPlaceIcon} from './accommodationPlaceIcon'
 import {Marker, Popup} from 'react-leaflet'
-import {Place} from '../shared/entities'
+import {Place} from 'shared/entities'
 
 type AccommodationPlaceMarkerState = {
     accommodation: Place

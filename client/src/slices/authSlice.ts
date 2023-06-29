@@ -1,7 +1,7 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
 import axios from 'shared/api'
 import {getRefreshToken} from 'shared/helpers/jwt'
-import {Auth, Error, State, UserFormSignIn, UserFormSignUp} from './types'
+import {Auth, State, UserFormSignIn, UserFormSignUp} from 'shared/entities'
 
 export const signUp = createAsyncThunk<Auth, UserFormSignUp, { rejectValue: Error }>(
     'auth/signUp',

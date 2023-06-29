@@ -1,11 +1,11 @@
 import React, {useEffect, useMemo} from 'react'
 import {Place} from 'shared/entities'
-import {Select} from 'antd'
+import {Form, Select} from 'antd'
 import {useAppDispatch, useAppSelector} from 'shared/hooks'
-import {buildingsSearch} from 'features/placesSlice'
-import {setCenter, setZoom} from 'features/mapSlice'
+import {buildingsSearch} from 'slices/placesSlice'
+import {setCenter, setZoom} from 'slices/mapSlice'
 import {LatLngExpression} from 'leaflet'
-import {setAccommodation} from 'features/travelSlice'
+import {setAccommodation} from 'slices/travelSlice'
 import debounce from 'lodash.debounce'
 
 const AccommodationSelect = () => {
@@ -40,23 +40,28 @@ const AccommodationSelect = () => {
     }, [accommodation])
 
     return (
-        <Select
-            showSearch
-            placeholder="Начните вводить место..."
-            defaultActiveFirstOption={false}
-            loading={isLoading}
-            filterOption={false}
-            // @ts-ignore
-            onSearch={building => buildingSearch(city, building)}
-            notFoundContent={null}
-            options={(places || []).map((place: Place) => ({
-                    value: place.id,
-                    label: place.name ? place.name + ' (' + place.address + ')' : place.address
-                })
-            )}
-            onSelect={value => dispatch(setAccommodation(getPlaceByOsmId(value)))}
-            disabled={!cities?.filter(c => c.id === city)[0]}
-        />
+        <Form.Item
+            name="accommodation"
+            label="Ночлег"
+        >
+            <Select
+                showSearch
+                placeholder="Начните вводить место..."
+                defaultActiveFirstOption={false}
+                loading={isLoading}
+                filterOption={false}
+                // @ts-ignore
+                onSearch={building => buildingSearch(city, building)}
+                notFoundContent={null}
+                options={(places || []).map((place: Place) => ({
+                        value: place.id,
+                        label: place.name ? place.name + ' (' + place.address + ')' : place.address
+                    })
+                )}
+                onSelect={value => dispatch(setAccommodation(getPlaceByOsmId(value)))}
+                disabled={!cities?.filter(c => c.id === city)[0]}
+            />
+        </Form.Item>
     )
 }
 

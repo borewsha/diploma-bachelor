@@ -33,9 +33,9 @@ const Map: FC<MapProps> = ({
             attributionControl={false}
         >
             <TileLayer url="http://localhost:8081/tile/{z}/{x}/{y}.png"/>
-            {accommodation && <AccommodationPlaceMarker accommodation={accommodation}/>}
-            {places && <PlacesClusterGroups places={places}/>}
-            {routePoints && <Routing points={routePoints}/>}
+            {!!accommodation && <AccommodationPlaceMarker accommodation={accommodation}/>}
+            {!!places?.length && <PlacesClusterGroups places={places}/>}
+            {!!routePoints?.length && <Routing points={routePoints}/>}
             <UpdatePosition center={center} zoom={zoom}/>
         </MapContainer>
     )

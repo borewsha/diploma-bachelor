@@ -2,9 +2,14 @@ package com.trip.server.database.enumeration;
 
 public enum PlaceType {
 
-    BUILDING,
-    TOURISM,
+    ATTRACTION,
+    CINEMA,
     HOTEL,
-    CUSTOM
+    HOUSE,
+    MONUMENT,
+    MUSEUM,
+    THEATRE,
+    VIEWPOINT,
+    UNKNOWN
 
 }

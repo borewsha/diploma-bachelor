@@ -2,10 +2,10 @@ package com.trip.server.service;
 
 import com.trip.server.database.entity.City;
 import com.trip.server.database.entity.Place;
+import com.trip.server.database.enumeration.PlaceType;
 import com.trip.server.database.repository.PlaceRepository;
 import com.trip.server.exception.NotFoundException;
 import com.trip.server.model.PlacePatchModel;
-import com.trip.server.overpass.model.GeoFilters;
 import com.trip.server.util.PageUtil;
 import com.trip.server.util.TextUtil;
 import fr.dudie.nominatim.model.Element;
@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -58,9 +59,14 @@ public class PlaceService {
         return places;
     }
 
-    @Cacheable(cacheNames = "placesCache", key = "{#city, #search, #pageable}")
-    public Page<Place> getByCity(City city, @Nullable String search, Pageable pageable) {
-        var pagedOverpassPlaces = overpassPlaceRepository.findByCity(city.getName(), search, pageable);
+    @Cacheable(cacheNames = "placesCache", key = "{#city, #search, #types, #pageable}")
+    public Page<Place> getByCity(
+            City city,
+            @Nullable String search,
+            @Nullable Set<PlaceType> types,
+            Pageable pageable
+    ) {
+        var pagedOverpassPlaces = overpassPlaceRepository.findByCity(city.getName(), search, types, pageable);
         var pagedDatabasePlaces = toPagedDatabasePlaces(pagedOverpassPlaces, city);
 
         var unsavedPlaces = pagedDatabasePlaces.getContent().stream()
@@ -70,34 +76,6 @@ public class PlaceService {
         placeRepository.saveAll(unsavedPlaces);
 
         return pagedDatabasePlaces;
-    }
-
-    @Cacheable(cacheNames = "placesCache", key = "{#city, #search, #pageable}")
-    public Page<Place> getBuildingsByCity(City city, @Nullable String search, Pageable pageable) {
-        var pagedOverpassBuildings = overpassPlaceRepository.findBuildingsByCity(city.getName(), search, pageable);
-        var pagedDatabaseBuildings = toPagedDatabasePlaces(pagedOverpassBuildings, city);
-
-        var unsavedBuildings = pagedDatabaseBuildings.getContent().stream()
-                .filter(b -> b.getId() == null)
-                .toList();
-        geocode(unsavedBuildings);
-        placeRepository.saveAll(unsavedBuildings);
-
-        return pagedDatabaseBuildings;
-    }
-
-    @Cacheable(cacheNames = "placesCache", key = "{#city, #search, #geoFilters}")
-    public List<Place> getTourismByCity(City city, @Nullable String search, GeoFilters geoFilters) {
-        var listedOverpassTourism = overpassPlaceRepository.findTourismByCity(city.getName(), search, geoFilters);
-        var listedDatabaseTourism = toListedDatabasePlaces(listedOverpassTourism, city);
-
-        var unsavedTourism = listedDatabaseTourism.stream()
-                .filter(t -> t.getId() == null)
-                .toList();
-        geocode(unsavedTourism);
-        placeRepository.saveAll(unsavedTourism);
-
-        return listedDatabaseTourism;
     }
 
     @CacheEvict(cacheNames = "placesCache", allEntries = true)
@@ -120,12 +98,18 @@ public class PlaceService {
         places.forEach(p -> Optional.ofNullable(lookupResponse.get(p.getOsmId()))
                 .ifPresent(a -> {
                     if (p.getAddress() == null) {
-                        Arrays.stream(a.getAddressElements())
-                                .filter(e -> TextUtil.containsCyrillic(e.getValue()))
-                                .filter(e -> e.getKey().equals("road") || e.getKey().equals("city_district"))
+                        var addressMap = Arrays.stream(a.getAddressElements())
+                                .collect(Collectors.toMap(Element::getKey, Element::getValue));
+                        var address = Stream.of(addressMap.get("road"), addressMap.get("city_district"))
+                                .filter(Objects::nonNull)
+                                .filter(TextUtil::containsCyrillic)
                                 .findFirst()
-                                .map(Element::getValue)
-                                .ifPresent(p::setAddress);
+                                .map(s -> Optional.ofNullable(addressMap.get("house_number"))
+                                        .map(hn -> s + ", " + hn)
+                                        .orElse(s)
+                                )
+                                .orElse("Неизвестно");
+                        p.setAddress(address);
                     }
                     if (p.getLat() == null || p.getLon() == null) {
                         p.setLat(a.getLatitude());

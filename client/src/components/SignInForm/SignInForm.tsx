@@ -24,6 +24,7 @@ const SignInForm: FC = () => {
                 }
                 message.success('Вы успешно вошли в аккаунт!')
                 navigate('/home')
+                window.location.reload()
             })
             .catch(error => message.error(error.message + '!'))
     }

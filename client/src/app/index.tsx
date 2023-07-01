@@ -4,11 +4,6 @@ import React, {FC} from 'react'
 import {Provider} from 'react-redux'
 import store from './store'
 
-// import React, {useEffect, useState} from 'react'
-// import {MapContainer, TileLayer} from 'react-leaflet'
-// import Routing from '../Routering'
-// import 'leaflet/dist/leaflet.css'
-
 const App: FC = () => {
     return (
         <Provider store={store}>

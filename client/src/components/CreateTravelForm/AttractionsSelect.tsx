@@ -1,7 +1,7 @@
 import React, {useEffect, useMemo} from 'react'
 import {Place} from 'shared/entities'
 import {addPlace, removePlace} from 'slices/travelSlice'
-import {Form, Select} from 'antd'
+import {Checkbox, Form, Select} from 'antd'
 import {useAppDispatch, useAppSelector} from 'shared/hooks'
 import {tourismSearch} from 'slices/placesSlice'
 import {setCenter} from 'slices/mapSlice'
@@ -37,35 +37,34 @@ const AttractionsSelect = () => {
         }
     }, [attractions])
 
-    console.log(attractions)
-
-    return (
+    return (<>
+        <Checkbox style={{marginBottom: 8}}>Показывать только достопримечательности</Checkbox>
         <Form.Item
             name="attractions"
             label="Места для посещения"
         >
-        <Select
-            showSearch
-            mode="multiple"
-            placeholder="Начните вводить место..."
-            defaultActiveFirstOption={false}
-            loading={isLoading}
-            showArrow={false}
-            filterOption={false}
-            // @ts-ignore
-            onSearch={attraction => attractionSearch(city, attraction)}
-            notFoundContent={null}
-            options={(tourism || []).map((tourism: Place) => ({
-                    value: tourism.id,
-                    label: tourism.name ? tourism.name + ' (' + tourism.address + ')' : tourism.address
-                })
-            )}
-            onSelect={value => dispatch(addPlace(getPlaceByOsmId(value)))}
-            onDeselect={value => dispatch(removePlace(value))}
-            disabled={!cities?.filter(c => c.id === city)[0]}
-        />
+            <Select
+                showSearch
+                mode="multiple"
+                placeholder="Начните вводить место..."
+                defaultActiveFirstOption={false}
+                loading={isLoading}
+                showArrow={false}
+                filterOption={false}
+                // @ts-ignore
+                onSearch={attraction => attractionSearch(city, attraction)}
+                notFoundContent={null}
+                options={(tourism || []).map((tourism: Place) => ({
+                        value: tourism.id,
+                        label: tourism.name ? tourism.name + ' (' + tourism.address + ')' : tourism.address
+                    })
+                )}
+                onSelect={value => dispatch(addPlace(getPlaceByOsmId(value)))}
+                onDeselect={value => dispatch(removePlace(value))}
+                disabled={!cities?.filter(c => c.id === city)[0]}
+            />
         </Form.Item>
-    )
+    </>)
 }
 
 export default AttractionsSelect

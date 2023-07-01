@@ -1,7 +1,7 @@
 import SignInPage from 'pages/SignInPage'
 import SignUpPage from 'pages/SignUpPage'
-import React, {FC} from 'react'
-import {BrowserRouter, Navigate, Route, Routes} from 'react-router-dom'
+import React, {FC, useEffect} from 'react'
+import {BrowserRouter, Navigate, Route, Routes, useNavigate} from 'react-router-dom'
 import {getAccessToken} from 'shared/helpers/jwt'
 import Home from './HomePage'
 

@@ -1,6 +1,6 @@
 import React, {useEffect, useMemo} from 'react'
 import {Place} from 'shared/entities'
-import {Form, Select} from 'antd'
+import {Checkbox, Form, Select} from 'antd'
 import {useAppDispatch, useAppSelector} from 'shared/hooks'
 import {buildingsSearch} from 'slices/placesSlice'
 import {setCenter, setZoom} from 'slices/mapSlice'
@@ -39,14 +39,15 @@ const AccommodationSelect = () => {
         }
     }, [accommodation])
 
-    return (
+    return (<>
+        <Checkbox style={{marginBottom: 8}}>Показывать только отели</Checkbox>
         <Form.Item
             name="accommodation"
             label="Ночлег"
         >
             <Select
                 showSearch
-                placeholder="Начните вводить место..."
+                placeholder="Начните вводить название или улицу..."
                 defaultActiveFirstOption={false}
                 loading={isLoading}
                 filterOption={false}
@@ -62,7 +63,7 @@ const AccommodationSelect = () => {
                 disabled={!cities?.filter(c => c.id === city)[0]}
             />
         </Form.Item>
-    )
+    </>)
 }
 
 export default AccommodationSelect

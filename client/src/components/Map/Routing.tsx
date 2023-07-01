@@ -93,23 +93,6 @@ const Routing = ({points}) => {
                 routingControl._container.style.display = 'None'
                 routingControls.push(routingControl)
             }
-
-            // const routingControl = L.Routing.control({
-            //     waypoints: points.map((point: any) => L.latLng(point.lat, point.lon)),
-            //     // show: false,
-            //     // @ts-ignore
-            //     lineOptions: {
-            //         styles: [{color: 'blue', opacity: 0.7, weight: 3}],
-            //
-            //     },
-            //     missingRouteStyles: {
-            //         style: [{color: 'black', opacity: 0.15, weight: 7},{color: 'white', opacity: 0.6, weight: 4},{color: 'gray', opacity: 0.8, weight: 2, dashArray: '7,12'}]
-            //     },
-            //     addWaypoints: false,
-            //     language: 'ru'
-            //     // serviceUrl: 'https://routing.openstreetmap.de/routed-foot/route/v1'
-            // }).addTo(map)
-
             // @ts-ignore
             return () => routingControls.map(a => map.removeControl(a))
         }

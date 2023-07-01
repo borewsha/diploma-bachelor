@@ -1,5 +1,5 @@
 import React from 'react'
-import Map from 'entities/Map'
+import Map from 'components/Map/Map'
 import {useAppSelector} from 'shared/hooks'
 
 const CreateTravelMap = () => {

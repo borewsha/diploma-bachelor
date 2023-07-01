@@ -1,9 +1,9 @@
 import {configureStore} from '@reduxjs/toolkit'
-import authSlice from 'features/auth/authSlice'
-import citySlice from 'features/citiesSlice'
-import placesSlice from 'features/placesSlice'
-import mapSlice from 'features/mapSlice'
-import travelSlice from 'features/travelSlice'
+import authSlice from 'slices/authSlice'
+import citySlice from 'slices/citiesSlice'
+import placesSlice from 'slices/placesSlice'
+import mapSlice from 'slices/mapSlice'
+import travelSlice from 'slices/travelSlice'
 
 const store = configureStore({
     reducer: {

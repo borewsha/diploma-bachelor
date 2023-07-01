@@ -1,26 +1,59 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit'
 import axios from 'shared/api'
 import {City, Place} from 'shared/entities'
+import {getAccessToken} from 'shared/helpers/jwt'
+import jwtDecode from 'jwt-decode'
 
 export const createTravel = createAsyncThunk<any, any>(
     'travel/create',
-    async (data) => await axios.post('/trips', data)
+    async (data) => await axios.post('/trips', {
+        cityId: data.city,
+        // @ts-ignore
+        userId: jwtDecode(getAccessToken()).sub,
+        accommodationId: data.accommodation,
+        dates: data.dates,
+        attractions: data.attractions
+    })
+)
+
+export const getMyTravels = createAsyncThunk<any, any>(
+    'travels/get',
+    // @ts-ignore
+    async () => await axios.get(`/users/${jwtDecode(getAccessToken()).sub}/trips?page=0&size=50&ascending=true&sortBy=id`)
+        .then(response => response.data.data)
 )
 
 export const getTravel = createAsyncThunk<any, any>(
     'travel/get',
-    async (id: number) => await axios.get(`trips/${id}`)
+    async (travelId: number) => await axios.get(`/trips/${travelId}`)
+        .then(response => response.data)
 )
 
 type Travel = {
     city: City
     accommodation: Place
     dates: string[]
-    days: {places: Place[], date: string}[]
+    days: { places: Place[], date: string }[]
 }
 
 type State = {
     data: Travel | undefined
+    myTravels: {
+        'id': number,
+        'userId': number,
+        'cityId': number,
+        'accommodationId': number,
+        'cityImageId': number,
+        'cityName': string,
+        'dates': string[]
+    }[] | [],
+    currentTravel: {
+        id: number,
+        userId: number,
+        city: City,
+        accommodation: Place,
+        attractions: Place[]
+    } | undefined,
     city: number | undefined
     dates: any[]
     accommodation: Place | undefined
@@ -31,6 +64,8 @@ type State = {
 
 const initialState: State = {
     data: undefined,
+    myTravels: [],
+    currentTravel: undefined,
     city: undefined,
     dates: [],
     accommodation: undefined,
@@ -70,11 +105,21 @@ const travelSlice = createSlice({
             .addCase(createTravel.rejected, (state) => {
                 state.isLoading = false
             })
+            .addCase(getMyTravels.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(getMyTravels.fulfilled, (state, action) => {
+                state.myTravels = action.payload
+                state.isLoading = false
+            })
+            .addCase(getMyTravels.rejected, (state) => {
+                state.isLoading = false
+            })
             .addCase(getTravel.pending, (state) => {
                 state.isLoading = true
             })
             .addCase(getTravel.fulfilled, (state, action) => {
-                state.data = action.payload
+                state.currentTravel = action.payload
                 state.isLoading = false
             })
             .addCase(getTravel.rejected, (state) => {

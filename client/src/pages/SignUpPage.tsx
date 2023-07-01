@@ -1,5 +1,5 @@
-import {SignUpForm} from 'features'
 import React, {FC} from 'react'
+import SignUpForm from 'components/SignUpForm/SignUpForm'
 
 const SignUpPage: FC = () => <SignUpForm/>
 

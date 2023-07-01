@@ -1,5 +1,5 @@
-import SignInPage from 'pages/auth/SignInPage'
-import SignUpPage from 'pages/auth/SignUpPage'
+import SignInPage from 'pages/SignInPage'
+import SignUpPage from 'pages/SignUpPage'
 import React, {FC} from 'react'
 import {BrowserRouter, Navigate, Route, Routes} from 'react-router-dom'
 import {getAccessToken} from 'shared/helpers/jwt'

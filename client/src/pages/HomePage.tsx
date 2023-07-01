@@ -3,8 +3,7 @@ import {Layout, Menu, theme} from 'antd'
 import {CompassOutlined, GlobalOutlined, PlusOutlined} from '@ant-design/icons'
 import {Route, Routes, useNavigate} from 'react-router-dom'
 import MyTravels from './MyTravels'
-import Map from 'entities/Map'
-import CreateTravel from './CreateTravel'
+import CreateTravelPage from './CreateTravelPage'
 import TravelDetail from './TravelDetail'
 import MapPage from './MapPage'
 
@@ -26,7 +25,7 @@ const Home = () => {
         },
         {
             path: '/create',
-            element: <CreateTravel/>
+            element: <CreateTravelPage/>
         },
         {
             path: '/travel/:id',
@@ -38,13 +37,13 @@ const Home = () => {
         <Layout style={{height: '100vh'}}>
             <Layout.Header
                 style={{
-                display: 'flex',
-                alignItems: 'center',
-                backgroundColor: colorBgContainer,
-                position: 'sticky',
-                top: 0,
-                zIndex: 1
-            }}>
+                    display: 'flex',
+                    alignItems: 'center',
+                    backgroundColor: colorBgContainer,
+                    position: 'sticky',
+                    top: 0,
+                    zIndex: 1
+                }}>
                 <img height={30} src={require('shared/logo.png')} alt="Traveler"/>
                 <Menu
                     theme="light"
@@ -65,7 +64,7 @@ const Home = () => {
                         },
                         {
                             key: '/create',
-                            icon: <PlusOutlined />,
+                            icon: <PlusOutlined/>,
                             label: 'Создать поездку'
                         }
                     ]}

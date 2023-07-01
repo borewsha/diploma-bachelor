@@ -1,11 +1,11 @@
 import {LockOutlined} from '@ant-design/icons'
 import {Button, Form, Input, message, Typography} from 'antd'
-import {signUp} from './authSlice'
-import {UserFormSignUp} from './types'
+import {signUp} from 'slices/authSlice'
 import React, {FC} from 'react'
 import {useNavigate} from 'react-router'
 import {Link} from 'react-router-dom'
 import {useAppDispatch, useAppSelector} from 'shared/hooks'
+import {UserFormSignUp} from 'shared/entities'
 
 const SignUpForm: FC = () => {
     const dispatch = useAppDispatch()

@@ -5,8 +5,8 @@ import {useNavigate} from 'react-router'
 import {Link} from 'react-router-dom'
 import {setAccessToken, setRefreshToken} from 'shared/helpers/jwt'
 import {useAppDispatch, useAppSelector} from 'shared/hooks'
-import {signIn} from './authSlice'
-import {UserFormSignIn} from './types'
+import {signIn} from 'slices/authSlice'
+import {UserFormSignIn} from 'shared/entities'
 
 const SignInForm: FC = () => {
     const dispatch = useAppDispatch()

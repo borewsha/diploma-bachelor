@@ -1,5 +1,5 @@
-import {SignInForm} from 'features'
 import React, {FC} from 'react'
+import SignInForm from 'components/SignInForm/SignInForm'
 
 const SignInPage: FC = () => <SignInForm/>
 

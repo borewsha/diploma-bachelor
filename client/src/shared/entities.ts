@@ -44,3 +44,15 @@ export type Error = {
     message: string
     errors?: Array<{field: string, message: string}>
 }
+
+export enum PlaceTypes {
+    attraction = 'attraction',
+    cinema = 'cinema',
+    hotel = 'hotel',
+    house = 'house',
+    monument = 'monument',
+    museum = 'museum',
+    theatre = 'theatre',
+    viewpoint = 'viewpoint',
+    unknown = 'unknown'
+}

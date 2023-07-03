@@ -1,8 +1,8 @@
-import React, {useEffect, useMemo} from 'react'
-import {Place} from 'shared/entities'
+import React, {useEffect, useMemo, useState} from 'react'
+import {Place, PlaceTypes} from 'shared/entities'
 import {Checkbox, Form, Select} from 'antd'
 import {useAppDispatch, useAppSelector} from 'shared/hooks'
-import {buildingsSearch} from 'slices/placesSlice'
+import {getAccommodationPlace} from 'slices/placesSlice'
 import {setCenter, setZoom} from 'slices/mapSlice'
 import {LatLngExpression} from 'leaflet'
 import {setAccommodation} from 'slices/travelSlice'
@@ -17,9 +17,15 @@ const AccommodationSelect = () => {
     const cities = useAppSelector(state => state.city.data)
     const isLoading = useAppSelector(state => state.places.isLoading)
 
+    const [onlyHotels, setOnlyHotels] = useState(false)
+
     const buildingSearch = useMemo(
-        () => debounce(async (city: number, place: string) => {
-            await dispatch(buildingsSearch({cityId: city, place}))
+        () => debounce(async (cityId: number, place: string) => {
+            let placeTypes = [PlaceTypes.house, PlaceTypes.hotel]
+            if (onlyHotels) {
+                placeTypes = [PlaceTypes.hotel]
+            }
+            await dispatch(getAccommodationPlace({cityId, place, placeTypes}))
         }, 1000), [])
 
     const getPlaceGeo = (id: number) => {
@@ -39,8 +45,10 @@ const AccommodationSelect = () => {
         }
     }, [accommodation])
 
+
     return (<>
-        <Checkbox style={{marginBottom: 8}}>Показывать только отели</Checkbox>
+        {/*// @ts-ignore*/}
+        <Checkbox value={onlyHotels} onClick={(e) => setOnlyHotels(!e.target.value)} style={{marginBottom: 8}}>Показывать только отели</Checkbox>
         <Form.Item
             name="accommodation"
             label="Ночлег"

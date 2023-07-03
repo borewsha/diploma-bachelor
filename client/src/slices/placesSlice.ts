@@ -3,17 +3,17 @@ import axios from 'shared/api'
 import {Place} from 'shared/entities'
 
 
-export const buildingsSearch = createAsyncThunk<Place[], { cityId: number, place: string }>(
-    'places/buildings/search',
-    async ({place, cityId}) =>
-        await axios.get(`/places/buildings?page=0&size=30&cityId=${cityId}&search=${place}`)
+export const getAccommodationPlace = createAsyncThunk<Place[], { cityId: number, place: string, placeTypes: string[] }>(
+    'accommodation',
+    async ({cityId, place, placeTypes}) =>
+        await axios.get(`/cities/${cityId}/places?page=0&size=50&search=${place}&type=${placeTypes.join(',')}`)
             .then(response => (response.data.data) as Place[])
 )
 
-export const tourismSearch = createAsyncThunk<Place[], { cityId: number, tourism: string }>(
+export const getAttractionPlaces = createAsyncThunk<Place[], { cityId: number, place: string, placeTypes: string[] }>(
     'places/tourism/search',
-    async ({tourism, cityId}) =>
-        await axios.get(`/places/tourism?cityId=${cityId}&search=${tourism}`)
+    async ({place, cityId, placeTypes}) =>
+        await axios.get(`/cities/${cityId}/places?page=0&size=50&search=${place}&type=${placeTypes.join(',')}`)
             .then(response => (response.data.data) as Place[])
 )
 
@@ -37,24 +37,24 @@ const placesSlice = createSlice({
     reducers: {},
     extraReducers: builder => {
         builder
-            .addCase(buildingsSearch.pending, (state) => {
+            .addCase(getAccommodationPlace.pending, (state) => {
                 state.isLoading = true
             })
-            .addCase(buildingsSearch.fulfilled, (state, action) => {
+            .addCase(getAccommodationPlace.fulfilled, (state, action) => {
                 state.isLoading = false
                 state.buildings = action.payload
             })
-            .addCase(buildingsSearch.rejected, (state) => {
+            .addCase(getAccommodationPlace.rejected, (state) => {
                 state.isLoading = false
             })
-            .addCase(tourismSearch.pending, (state) => {
+            .addCase(getAttractionPlaces.pending, (state) => {
                 state.isLoading = true
             })
-            .addCase(tourismSearch.fulfilled, (state, action) => {
+            .addCase(getAttractionPlaces.fulfilled, (state, action) => {
                 state.isLoading = false
                 state.tourism = action.payload
             })
-            .addCase(tourismSearch.rejected, (state) => {
+            .addCase(getAttractionPlaces.rejected, (state) => {
                 state.isLoading = false
             })
     }

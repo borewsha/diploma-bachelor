@@ -390,7 +390,7 @@ const TravelDetail = () => {
     return (
         <div style={{display: 'flex'}}>
             <div style={{width: '50%', padding: 16}}>
-                <Typography.Title>{travel?.city.name}</Typography.Title>
+                <Typography.Title>Владивосток</Typography.Title>
                 <Calendar
                     dateCellRender={dateCellRender}
                     // @ts-ignore

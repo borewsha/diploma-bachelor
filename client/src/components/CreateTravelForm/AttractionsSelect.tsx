@@ -1,9 +1,9 @@
-import React, {useEffect, useMemo} from 'react'
-import {Place} from 'shared/entities'
+import React, {useEffect, useMemo, useState} from 'react'
+import {Place, PlaceTypes} from 'shared/entities'
 import {addPlace, removePlace} from 'slices/travelSlice'
 import {Checkbox, Form, Select} from 'antd'
 import {useAppDispatch, useAppSelector} from 'shared/hooks'
-import {tourismSearch} from 'slices/placesSlice'
+import {getAttractionPlaces} from 'slices/placesSlice'
 import {setCenter} from 'slices/mapSlice'
 import {LatLngExpression} from 'leaflet'
 import debounce from 'lodash.debounce'
@@ -16,10 +16,15 @@ const AttractionsSelect = () => {
     const cities = useAppSelector(state => state.city.data)
     const isLoading = useAppSelector(state => state.places.isLoading)
 
+    const [onlyAttractions, setOnlyAttractions] = useState(false)
 
     const attractionSearch = useMemo(
-        () => debounce(async (cityId: number, tourism: string) => {
-            await dispatch(tourismSearch({cityId, tourism}))
+        () => debounce(async (cityId: number, place: string) => {
+            let placeTypes = [PlaceTypes.cinema, PlaceTypes.theatre, PlaceTypes.monument, PlaceTypes.attraction, PlaceTypes.museum, PlaceTypes.viewpoint]
+            if (onlyAttractions) {
+                placeTypes = [PlaceTypes.monument, PlaceTypes.attraction, PlaceTypes.museum, PlaceTypes.viewpoint]
+            }
+            await dispatch(getAttractionPlaces({cityId, place, placeTypes}))
         }, 1000), [])
 
     const getPlaceByOsmId = (id: number) => {
@@ -38,7 +43,8 @@ const AttractionsSelect = () => {
     }, [attractions])
 
     return (<>
-        <Checkbox style={{marginBottom: 8}}>Показывать только достопримечательности</Checkbox>
+        {/*// @ts-ignore*/}
+        <Checkbox value={onlyAttractions} onClick={(e) => setOnlyAttractions(!e.target.value)} style={{marginBottom: 8}}>Показывать только достопримечательности</Checkbox>
         <Form.Item
             name="attractions"
             label="Места для посещения"

@@ -55,7 +55,7 @@ const Routing = ({points}) => {
     //         'lon': 131.8982528
     //     }
     // ]
-    const routeTypes = ['car', 'foot', 'car', 'foot', 'car', 'foot']
+    const routeTypes = ['car', 'foot', 'foot', 'car', 'car', 'foot']
 
     // @ts-ignore
     useEffect(() => {

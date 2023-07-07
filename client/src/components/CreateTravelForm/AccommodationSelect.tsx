@@ -23,10 +23,12 @@ const AccommodationSelect = () => {
         () => debounce(async (cityId: number, place: string) => {
             let placeTypes = [PlaceTypes.house, PlaceTypes.hotel]
             if (onlyHotels) {
+                console.log('if onlyHotels', onlyHotels)
                 placeTypes = [PlaceTypes.hotel]
             }
             await dispatch(getAccommodationPlace({cityId, place, placeTypes}))
-        }, 1000), [])
+        }, 1000), [onlyHotels])
+    console.log('onlyHotels', onlyHotels)
 
     const getPlaceGeo = (id: number) => {
         const place = places.filter(place => place.id === id)[0]
@@ -47,8 +49,11 @@ const AccommodationSelect = () => {
 
 
     return (<>
-        {/*// @ts-ignore*/}
-        <Checkbox value={onlyHotels} onClick={(e) => setOnlyHotels(!e.target.value)} style={{marginBottom: 8}}>Показывать только отели</Checkbox>
+        <Checkbox
+            checked={onlyHotels}
+            // @ts-ignore
+            onClick={(e) => setOnlyHotels(!onlyHotels)}
+            style={{marginBottom: 8}}>Показывать только отели</Checkbox>
         <Form.Item
             name="accommodation"
             label="Ночлег"

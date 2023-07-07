@@ -10,19 +10,6 @@ const SendButton = () => {
     const attractions = useAppSelector(state => state.travel.attractions)
     const dates = useAppSelector(state => state.travel.dates)
 
-    console.log(`
-        cities: ${cities}
-        city: ${city}
-        accommodation: ${accommodation}
-        attractions: ${attractions}
-        dates: ${dates}
-        cities: ${!!cities.length}
-        city: ${!!cities?.filter(c => c.id === city)[0]}
-        accommodation: ${!!accommodation}
-        attractions: ${!!attractions.length}
-        dates: ${dates.length > 0}
-    `)
-
     return (
         <Button
             type="primary"

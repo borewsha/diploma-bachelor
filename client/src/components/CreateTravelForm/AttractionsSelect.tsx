@@ -25,7 +25,7 @@ const AttractionsSelect = () => {
                 placeTypes = [PlaceTypes.monument, PlaceTypes.attraction, PlaceTypes.museum, PlaceTypes.viewpoint]
             }
             await dispatch(getAttractionPlaces({cityId, place, placeTypes}))
-        }, 1000), [])
+        }, 1000), [onlyAttractions])
 
     const getPlaceByOsmId = (id: number) => {
         return tourism.filter(attraction => attraction.id === id)[0] as Place
@@ -43,8 +43,11 @@ const AttractionsSelect = () => {
     }, [attractions])
 
     return (<>
-        {/*// @ts-ignore*/}
-        <Checkbox value={onlyAttractions} onClick={(e) => setOnlyAttractions(!e.target.value)} style={{marginBottom: 8}}>Показывать только достопримечательности</Checkbox>
+        <Checkbox
+            checked={onlyAttractions}
+            // @ts-ignore
+            onClick={(e) => setOnlyAttractions(!onlyAttractions)}
+            style={{marginBottom: 8}}>Показывать только достопримечательности</Checkbox>
         <Form.Item
             name="attractions"
             label="Места для посещения"

@@ -16,16 +16,16 @@ export const createTravel = createAsyncThunk<any, any>(
     })
 )
 
-export const getMyTravels = createAsyncThunk<any, any>(
+export const getMyTravels = createAsyncThunk<any>(
     'travels/get',
     // @ts-ignore
     async () => await axios.get(`/users/${jwtDecode(getAccessToken()).sub}/trips?page=0&size=50&ascending=true&sortBy=id`)
         .then(response => response.data.data)
 )
 
-export const getTravel = createAsyncThunk<any, any>(
+export const getTravel = createAsyncThunk<Travel, string>(
     'travel/get',
-    async (travelId: number) => await axios.get(`/trips/${travelId}`)
+    async (travelId: string) => await axios.get(`/trips/${travelId}`)
         .then(response => response.data)
 )
 
@@ -33,11 +33,19 @@ type Travel = {
     city: City
     accommodation: Place
     dates: string[]
-    days: { places: Place[], date: string }[]
+    days: {
+        date: string,
+        places: Place[],
+        ways: {
+            type: 'car' | 'foot',
+            points: [number, number][]
+        }[]
+    }[]
 }
 
 type State = {
     data: Travel | undefined
+    selectedWay: number
     myTravels: {
         'id': number,
         'userId': number,
@@ -63,7 +71,128 @@ type State = {
 }
 
 const initialState: State = {
-    data: undefined,
+
+    data: {
+        city: {
+            'id': 1,
+            'imageId': 8,
+            'name': 'Владивосток',
+            'region': 'Приморский край',
+            'lat': 43.1150678,
+            'lon': 131.8855768
+        },
+        accommodation: {
+            'id': 1050,
+            'cityId': 1,
+            'imageId': null,
+            'type': 'hotel',
+            'name': 'Версаль',
+            'address': 'Светланская улица, 10',
+            'lat': 43.1166993,
+            'lon': 131.8797746
+        },
+        dates: ['2023-07-15', '2023-07-22'],
+        days: [
+            {
+                date: '2023-07-16',
+                places: [
+                    {
+                        'id': 157,
+                        'cityId': 1,
+                        'imageId': null,
+                        'type': 'tourism',
+                        'name': 'Музей трепанга',
+                        'address': 'Верхнепортовая улица',
+                        'lat': 43.1006922,
+                        'lon': 131.8628391
+                    },
+                    {
+                        'id': 143,
+                        'cityId': 1,
+                        'imageId': null,
+                        'type': 'tourism',
+                        'name': 'Скульптура Воспоминание о моряке загранплавания',
+                        'address': 'улица Адмирала Фокина',
+                        'lat': 43.1169684,
+                        'lon': 131.8860766
+                    }
+                ],
+                ways: [
+                    {
+                        type: 'car',
+                        points: [
+                            [43.1166993, 131.8797746],
+                            [43.1006922, 131.8628391]
+                        ]
+                    },
+                    {
+                        type: 'foot',
+                        points: [
+                            [43.1006922, 131.8628391],
+                            [43.1169684, 131.8860766]
+                        ]
+                    },
+                    {
+                        type: 'car',
+                        points: [
+                            [43.1169684, 131.8860766],
+                            [43.1166993, 131.8797746]
+                        ]
+                    }
+                ]
+            },
+            {
+                date: '2023-07-17',
+                places: [
+                    {
+                        'id': 136,
+                        'cityId': 1,
+                        'imageId': null,
+                        'type': 'tourism',
+                        'name': 'Музей им. Арсеньева',
+                        'address': 'Светланская улица',
+                        'lat': 43.1163613,
+                        'lon': 131.8821714
+                    },
+                    {
+                        'id': 31,
+                        'cityId': 1,
+                        'imageId': null,
+                        'type': 'building',
+                        'name': 'Морской Вокзал',
+                        'address': 'Нижнепортовая улица, 1',
+                        'lat': 43.1111941,
+                        'lon': 131.88279728772915
+                    }
+                ],
+                ways: [
+                    {
+                        type: 'car',
+                        points: [
+                            [43.1166993, 131.8797746],
+                            [43.1163613, 131.8821714]
+                        ]
+                    },
+                    {
+                        type: 'foot',
+                        points: [
+                            [43.1163613, 131.8821714],
+                            [43.1111941, 131.88279728772915]
+                        ]
+                    },
+                    {
+                        type: 'car',
+                        points: [
+                            [43.1111941, 131.88279728772915],
+                            [43.1166993, 131.8797746]
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    selectedWay: 0,
+
     myTravels: [],
     currentTravel: undefined,
     city: undefined,
@@ -92,6 +221,9 @@ const travelSlice = createSlice({
         },
         clearPlaces(state) {
             state.attractions = []
+        },
+        selectWay(state, action) {
+            state.selectedWay = action.payload
         }
     },
     extraReducers: builder => {
@@ -119,7 +251,7 @@ const travelSlice = createSlice({
                 state.isLoading = true
             })
             .addCase(getTravel.fulfilled, (state, action) => {
-                state.currentTravel = action.payload
+                state.data = action.payload
                 state.isLoading = false
             })
             .addCase(getTravel.rejected, (state) => {
@@ -133,7 +265,8 @@ export const {
     setAccommodation,
     addPlace,
     removePlace,
-    clearPlaces
+    clearPlaces,
+    selectWay
 } = travelSlice.actions
 
 export default travelSlice.reducer

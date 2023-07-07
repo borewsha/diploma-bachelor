@@ -6,7 +6,7 @@ export type Place = {
     address: string
     lat: number
     lon: number
-    type: 'tourism' | 'building'
+    type: string
 }
 
 export type City = {

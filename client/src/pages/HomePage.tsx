@@ -4,9 +4,11 @@ import {CompassOutlined, GlobalOutlined, PlusOutlined} from '@ant-design/icons'
 import {Route, Routes, useNavigate} from 'react-router-dom'
 import MyTravels from './MyTravels'
 import CreateTravelPage from './CreateTravelPage'
-import TravelDetail from './TravelDetail'
+import TravelDetail from './TravelDetail/TravelDetail'
 import MapPage from './MapPage'
-import {setAccessToken, setRefreshToken} from '../shared/helpers/jwt'
+import jwtDecode from 'jwt-decode'
+import {getAccessToken} from 'shared/helpers/jwt'
+import AdminPage from './AdminPage'
 
 const Home = () => {
     const navigate = useNavigate()
@@ -22,7 +24,10 @@ const Home = () => {
     const authorizedNavigation = [
         {
             path: '/',
-            element: <MyTravels/>
+            // @ts-ignore
+            element: jwtDecode(getAccessToken()).role === 'ROLE_USER'
+                ? <MyTravels/>
+                : <AdminPage/>
         },
         {
             path: '/map',
@@ -63,6 +68,33 @@ const Home = () => {
         boxShadow: token.boxShadowSecondary
     }
 
+    // @ts-ignore
+    const menuItems = jwtDecode(getAccessToken()).role === 'ROLE_USER'
+        ? [
+            {
+                key: '/',
+                icon: <CompassOutlined/>,
+                label: 'Мои путешествия'
+            },
+            {
+                key: '/map',
+                icon: <GlobalOutlined/>,
+                label: 'Карта'
+            },
+            {
+                key: '/create',
+                icon: <PlusOutlined/>,
+                label: 'Создать поездку'
+            }
+        ]
+        : [
+            {
+                key: '/',
+                icon: <CompassOutlined/>,
+                label: 'Города'
+            }
+        ]
+
     return (
         <Layout style={{height: '100vh'}}>
             <Layout.Header
@@ -81,23 +113,7 @@ const Home = () => {
                     mode="horizontal"
                     selectedKeys={[window.location.pathname.slice(5, window.location.pathname.length) || '/']}
                     onClick={e => navigate(`/home${e.key}`)}
-                    items={[
-                        {
-                            key: '/',
-                            icon: <CompassOutlined/>,
-                            label: 'Мои путешествия'
-                        },
-                        {
-                            key: '/map',
-                            icon: <GlobalOutlined/>,
-                            label: 'Карта'
-                        },
-                        {
-                            key: '/create',
-                            icon: <PlusOutlined/>,
-                            label: 'Создать поездку'
-                        }
-                    ]}
+                    items={menuItems}
                 />
                 <Dropdown menu={{items}}
                           dropdownRender={(menu) => (

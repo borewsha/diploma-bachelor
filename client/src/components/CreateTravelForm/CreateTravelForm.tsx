@@ -7,12 +7,22 @@ import SendButton from './SendButton'
 import {Form, message} from 'antd'
 import {createTravel} from 'slices/travelSlice'
 import {useAppDispatch} from 'shared/hooks'
+import {useNavigate} from 'react-router'
 
 const CreateTravelForm = () => {
     const dispatch = useAppDispatch()
+    const navigate = useNavigate()
 
     const onFinish = async (data: any) => {
         await dispatch(createTravel(data))
+            .unwrap()
+            .then(res => {
+                if (res.status === 201) {
+                    message.success('Путешествие успешно создано!')
+                    navigate('/home')
+                }
+            })
+            .catch(error => message.error(error.message + '!'))
     }
 
     const onFinishFailed = async () => {

@@ -50,14 +50,24 @@ const Map: FC<MapProps> = ({
                         return <Polyline
                             key={way.points[0][0]}
                             positions={way.points}
-                            pathOptions={{color: 'red', weight: i === selectedWay ? 7 : 3, opacity: 0.7}}
+                            pathOptions={{
+                                color: 'red',
+                                weight: i === selectedWay ? 7 : 3,
+                                opacity: 0.7,
+                                dashArray: i === selectedWay ? '' : '30 10'
+                            }}
                         />
                     }
                     if (way.type === 'foot') {
                         return <Polyline
                             key={way.points[0][0]}
                             positions={way.points}
-                            pathOptions={{color: 'blue', weight: i === selectedWay ? 7 : 3, opacity: 0.7}}
+                            pathOptions={{
+                                color: 'blue',
+                                weight: i === selectedWay ? 7 : 3,
+                                opacity: 0.7,
+                                dashArray: i === selectedWay ? '' : '30 10'
+                            }}
                         />
                     }
                     return null

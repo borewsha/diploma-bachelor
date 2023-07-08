@@ -2,7 +2,7 @@ import React, {useEffect} from 'react'
 import {Card, Col, Row, Typography} from 'antd'
 import {Link} from 'react-router-dom'
 import {useAppDispatch, useAppSelector} from 'shared/hooks'
-import {getMyTravels, getTravel} from 'slices/travelSlice'
+import {getMyTravels} from 'slices/travelSlice'
 
 const MyTravels = () => {
     const dispatch = useAppDispatch()
@@ -38,11 +38,16 @@ const MyTravels = () => {
                                     <Card
                                         bordered
                                         hoverable
-                                        cover={<img
-                                            style={{objectFit: 'cover', height: 250}}
-                                            src={'http://localhost:8080/api/images/' + data.cityImageId}
-                                            alt={data.cityName}/>
-                                    }
+                                        cover={!!data.cityImageId
+                                            ? <img
+                                                style={{objectFit: 'cover', height: 250}}
+                                                src={'http://localhost:8080/api/images/' + data.cityImageId}
+                                                alt={data.cityName}/>
+                                            : <img
+                                                style={{objectFit: 'cover', height: 250}}
+                                                src={'https://cdn1.ozone.ru/s3/multimedia-x/6391435521.jpg'}
+                                                alt={data.cityName}/>
+                                        }
                                     >
                                         <Card.Meta
                                             title={data.cityName}
@@ -54,7 +59,9 @@ const MyTravels = () => {
                         )
                     }
                     {
-                        !trips.length && <h2>Путешествий еще нет...</h2>
+                        !trips.length &&
+                        <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%'}}>
+                            <h2>Путешествий еще нет...</h2></div>
                     }
                 </Row>
             </div>

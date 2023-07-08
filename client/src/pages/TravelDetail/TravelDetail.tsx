@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {Calendar, Typography} from 'antd'
+import {Calendar, ConfigProvider, Typography} from 'antd'
 import dayjs, {Dayjs} from 'dayjs'
 import Map from 'components/Map/Map'
 import {useAppDispatch, useAppSelector} from 'shared/hooks'
@@ -9,10 +9,12 @@ import {Place} from 'shared/entities'
 import './TravelDetail.modules.css'
 import {selectWay} from 'slices/travelSlice'
 import {setCenter} from 'slices/mapSlice'
+import ru from 'antd/locale/ru_RU'
+import 'dayjs/locale/ru';
+dayjs.locale('ru');
 
 const TravelDetail = () => {
     const {pathname} = useLocation()
-    console.log(pathname.split('/').at(-1))
 
     const [way, setWay] = useState<{
         places: Place[], ways: {
@@ -68,6 +70,7 @@ const TravelDetail = () => {
         <div style={{display: 'flex'}}>
             <div style={{width: '50%', padding: 16}}>
                 <Typography.Title>Владивосток</Typography.Title>
+                <ConfigProvider locale={ru}>
                 <Calendar
                     dateCellRender={dateCellRender}
                     // @ts-ignore
@@ -86,7 +89,8 @@ const TravelDetail = () => {
                             setWay({places: [], ways: []})
                         }
                     }}
-                />
+                    mode='month'
+                /></ConfigProvider>
             </div>
             <div style={{width: '100%'}}>
                 <div style={{height: window.innerHeight - 64, width: '100%'}}>
@@ -142,6 +146,27 @@ const TravelDetail = () => {
                             !way?.places?.length &&
                             <Typography.Paragraph>На эту дату нет маршрута. Выберите другой день.</Typography.Paragraph>
                         }
+                    </div>
+                    <div style={{
+                        position: 'absolute',
+                        top: 10 + 64,
+                        right: 380 + 20,
+                        background: 'white',
+                        zIndex: 1000,
+                        borderRadius: 8,
+                        border: '2px solid #33333340',
+                        backgroundClip: 'padding-box',
+                        padding: 8,
+                        overflowY: 'auto'
+                    }}>
+                        <div style={{display: 'flex', alignItems: 'center', marginBottom: 10}}>
+                            <img style={{marginRight: 8}} src="https://cdn-icons-png.flaticon.com/512/5604/5604658.png" alt="" width={32}/>
+                            <div style={{width: 40, height: 0, border: '3px dashed red', opacity: 0.7}}></div>
+                        </div>
+                        <div style={{display: 'flex', alignItems: 'center'}}>
+                            <img style={{marginRight: 8}} src="https://cdn-icons-png.flaticon.com/512/846/846296.png" alt="" width={32}/>
+                            <div style={{width: 40, height: 0, border: '3px dashed blue', opacity: 0.7}}></div>
+                        </div>
                     </div>
                     <Map
                         style={{width: '100%', height: '100%', position: 'relative'}}

@@ -38,11 +38,18 @@ export type State = {
     data: Auth | null
     isLoading: boolean
     error: string | undefined
+    user: {
+        'id': number,
+        'role': string,
+        'registeredAt': string,
+        'email': string,
+        'fullName': string
+    } | undefined
 }
 
 export type Error = {
     message: string
-    errors?: Array<{field: string, message: string}>
+    errors?: Array<{ field: string, message: string }>
 }
 
 export enum PlaceTypes {

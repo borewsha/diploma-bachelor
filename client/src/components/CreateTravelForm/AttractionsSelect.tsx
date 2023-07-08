@@ -36,6 +36,12 @@ const AttractionsSelect = () => {
     }
 
     useEffect(() => {
+        if (city) {
+            attractionSearch(city, '')
+        }
+    }, [city, onlyAttractions])
+
+    useEffect(() => {
         if (attractions.length > 0) {
             // @ts-ignore
             dispatch(setCenter(getPlaceCoords(attractions.at(-1))))

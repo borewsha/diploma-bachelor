@@ -9,9 +9,14 @@ import MapPage from './MapPage'
 import jwtDecode from 'jwt-decode'
 import {getAccessToken} from 'shared/helpers/jwt'
 import AdminPage from './AdminPage'
+import {useAppDispatch, useAppSelector} from '../shared/hooks'
+import {getUserData} from '../slices/authSlice'
 
 const Home = () => {
     const navigate = useNavigate()
+    const dispatch = useAppDispatch()
+
+    const userData = useAppSelector(state => state.auth.user)
 
     const {
         token: {colorBgContainer}
@@ -48,7 +53,7 @@ const Home = () => {
             key: '',
             label: (
                 <span>
-                    Имя: Иванов Иван
+                    Имя: {userData?.fullName}
                 </span>
             )
         },
@@ -56,7 +61,7 @@ const Home = () => {
             key: '3',
             label: (
                 <span>
-                    Почта: ivanov@ivan.com
+                    Почта: {userData?.email}
                 </span>
             )
         }
@@ -115,22 +120,24 @@ const Home = () => {
                     onClick={e => navigate(`/home${e.key}`)}
                     items={menuItems}
                 />
-                <Dropdown menu={{items}}
-                          dropdownRender={(menu) => (
-                              <div style={contentStyle}>
-                                  {React.cloneElement(menu as React.ReactElement, {style: {boxShadow: 'none'}})}
-                                  <Divider style={{margin: 0}}/>
-                                  <Space style={{padding: 8}}>
-                                      <Button type="primary" danger onClick={() => {
-                                          window.localStorage.removeItem('accessToken')
-                                          window.localStorage.removeItem('refreshToken')
-                                          navigate('/login')
-                                          window.location.reload()
-                                      }}>Выйти</Button>
-                                  </Space>
-                              </div>
-                          )}>
-                    <Button type="primary">Профиль</Button>
+                <Dropdown
+                    menu={{items}}
+                    trigger={['click']}
+                    dropdownRender={(menu) => (
+                        <div style={contentStyle}>
+                            {React.cloneElement(menu as React.ReactElement, {style: {boxShadow: 'none'}})}
+                            <Divider style={{margin: 0}}/>
+                            <Space style={{padding: 8}}>
+                                <Button type="primary" danger onClick={() => {
+                                    window.localStorage.removeItem('accessToken')
+                                    window.localStorage.removeItem('refreshToken')
+                                    navigate('/login')
+                                    window.location.reload()
+                                }}>Выйти</Button>
+                            </Space>
+                        </div>
+                    )}>
+                    <Button onClick={() => dispatch(getUserData())} type="primary">Профиль</Button>
                 </Dropdown>
             </Layout.Header>
             <Layout.Content

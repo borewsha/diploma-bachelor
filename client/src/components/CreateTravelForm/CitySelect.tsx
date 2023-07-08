@@ -26,6 +26,10 @@ const CitySelect = () => {
         }, 500), [])
 
     useEffect(() => {
+        citySearch('')
+    }, [])
+
+    useEffect(() => {
         if (selectedCity) {
             dispatch(setCenter(getCityCoords(selectedCity)))
             dispatch(setZoom(13))

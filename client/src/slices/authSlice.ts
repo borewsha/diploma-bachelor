@@ -29,10 +29,18 @@ export const refresh = createAsyncThunk<Auth, null, { rejectValue: Error }>(
             .catch(error => rejectWithValue((error.response.data) as Error))
 )
 
+export const getUserData = createAsyncThunk<any>(
+    'auth/refresh',
+    async () =>
+        await axios.get('/users/self')
+            .then(response => (response.data) as any)
+)
+
 const initialState: State = {
     data: null,
     isLoading: false,
-    error: undefined
+    error: undefined,
+    user: undefined
 }
 
 const authSlice = createSlice({
@@ -58,6 +66,16 @@ const authSlice = createSlice({
                 state.data = action.payload
             })
             .addCase(signIn.rejected, (state) => {
+                state.isLoading = false
+            })
+            .addCase(getUserData.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(getUserData.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.user = action.payload
+            })
+            .addCase(getUserData.rejected, (state) => {
                 state.isLoading = false
             })
     }

@@ -23,12 +23,10 @@ const AccommodationSelect = () => {
         () => debounce(async (cityId: number, place: string) => {
             let placeTypes = [PlaceTypes.house, PlaceTypes.hotel]
             if (onlyHotels) {
-                console.log('if onlyHotels', onlyHotels)
                 placeTypes = [PlaceTypes.hotel]
             }
             await dispatch(getAccommodationPlace({cityId, place, placeTypes}))
         }, 1000), [onlyHotels])
-    console.log('onlyHotels', onlyHotels)
 
     const getPlaceGeo = (id: number) => {
         const place = places.filter(place => place.id === id)[0]
@@ -38,6 +36,12 @@ const AccommodationSelect = () => {
     const getPlaceByOsmId = (id: number) => {
         return places.filter(place => place.id === id)[0] as Place
     }
+
+    useEffect(() => {
+        if (city) {
+            buildingSearch(city, '')
+        }
+    }, [city, onlyHotels])
 
     useEffect(() => {
         if (accommodation) {

@@ -27,7 +27,7 @@ const TravelDetail = () => {
 
     useEffect(() => {
         // @ts-ignore
-        dispatch(getTravel(pathname.split('/').at(-1)))
+        // dispatch(getTravel(pathname.split('/').at(-1)))
         dispatch(setCenter([travel?.accommodation.lat, travel?.accommodation.lon]))
     }, [])
 
@@ -174,7 +174,8 @@ const TravelDetail = () => {
                         zoom={14}
                         accommodation={travel?.accommodation}
                         places={way?.places}
-                        routePoints={way?.ways}
+                        // @ts-ignore
+                        routePoints={way}
                     />
                 </div>
             </div>

@@ -14,7 +14,8 @@ const AdminPage = () => {
         dispatch(getCitiesAdm({page: 0, city: ''}))
     }, [])
 
-    const data = useAppSelector(state => state.city.data)
+    const data = useAppSelector(state => state.city.dataAdm)
+    const isLoading = useAppSelector(state => state.city.isLoading)
 
     return (
         <div style={{display: 'flex', flexDirection: 'column', padding: 16}}>
@@ -37,12 +38,13 @@ const AdminPage = () => {
                         key: 'download'
                     }
                 ]}
-                dataSource={data.map((city: City) => ({
+                dataSource={data.data.map((city: City) => ({
                     city: city.name,
                     picture: city.imageId
-                        ? <img height={100} src={'http://localhost:8080/api/images/' + city.imageId}/>
-                        : <div>Фото отсутствует</div>,
+                        ? <img key={city.id} height={100} src={'http://localhost:8080/api/images/' + city.imageId}/>
+                        : <div key={city.id}>Фото отсутствует</div>,
                     download: <Upload
+                        key={city.id}
                         name="multipartFile"
                         action="http://localhost:8080/api/images"
                         headers={{
@@ -59,6 +61,17 @@ const AdminPage = () => {
                         </Button>
                     </Upload>
                 }))}
+                pagination={{
+                    current: data.current,
+                    total: data.size,
+                    showSizeChanger: false,
+                    onChange: (page) => {
+                        dispatch(getCitiesAdm({page, city: ''}))
+                    }
+                }}
+                loading={isLoading}
+                // @ts-ignore
+                rowKey={(record, index) => record.city}
             />
         </div>
     )

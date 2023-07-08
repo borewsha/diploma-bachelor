@@ -9,21 +9,31 @@ export const searchingCities = createAsyncThunk<City[], string>(
             .then(response => (response.data.data) as City[])
 )
 
-export const getCitiesAdm = createAsyncThunk<City[], {page: number, city: string}>(
+export const getCitiesAdm = createAsyncThunk<any, { page: number, city: string }>(
     'cities/adm',
     async ({page, city}) =>
         await axios.get(`/cities?page=${page}&size=10&search=${city}`)
-            .then(response => (response.data.data) as City[])
+            .then(response => response.data)
 )
 
 type State = {
     data: City[]
+    dataAdm: {
+        size: number,
+        current: number,
+        data: City[]
+    }
     isLoading: boolean
     error: string | undefined
 }
 
 const initialState: State = {
     data: [],
+    dataAdm: {
+        size: 0,
+        current: 0,
+        data: []
+    },
     isLoading: false,
     error: undefined
 }
@@ -49,7 +59,11 @@ const citySlice = createSlice({
             })
             .addCase(getCitiesAdm.fulfilled, (state, action) => {
                 state.isLoading = false
-                state.data = action.payload
+                state.dataAdm = {
+                    size: action.payload.totalElements,
+                    current: action.payload.page,
+                    data: action.payload.data
+                }
             })
             .addCase(getCitiesAdm.rejected, (state) => {
                 state.isLoading = false

@@ -68,14 +68,14 @@ public class CityController extends ApiController {
         var page = cityService.getAll(search, pageRequest);
         var pageDto = PageUtil.toDto(modelMapper, page, CityDto.class);
 
-        return new ResponseEntity<>(pageDto, HttpStatus.OK);
+        return ResponseEntity.ok(pageDto);
     }
 
     @Operation(summary = "Поиск города")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Данные о городе успешно отданы"
+                    description = "Город найден"
             ),
             @ApiResponse(
                     responseCode = "404",
@@ -88,7 +88,7 @@ public class CityController extends ApiController {
         var city = cityService.getById(id);
         var cityDto = modelMapper.map(city, CityDto.class);
 
-        return new ResponseEntity<>(cityDto, HttpStatus.OK);
+        return ResponseEntity.ok(cityDto);
     }
 
     @Operation(summary = "Список всех мест в городе")
@@ -115,7 +115,7 @@ public class CityController extends ApiController {
         var page = placeService.getByCity(city, search, type, pageRequest);
         var pageDto = PageUtil.toDto(modelMapper, page, PlaceDto.class);
 
-        return new ResponseEntity<>(pageDto, HttpStatus.OK);
+        return ResponseEntity.ok(pageDto);
     }
 
     @Operation(summary = "Обновить данные о городе")
@@ -161,7 +161,7 @@ public class CityController extends ApiController {
 
         cityService.patch(id, cityPatchModel);
 
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return ResponseEntity.noContent().build();
     }
 
 }

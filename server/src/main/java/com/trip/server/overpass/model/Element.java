@@ -1,5 +1,6 @@
 package com.trip.server.overpass.model;
 
+import com.trip.server.model.Coordinatable;
 import com.trip.server.model.Identifiable;
 import com.trip.server.model.OsmType;
 import lombok.Data;
@@ -10,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @Data
-public class Element implements Identifiable {
+public class Element implements Identifiable, Coordinatable {
 
     private Long id;
 

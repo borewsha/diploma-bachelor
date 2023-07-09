@@ -1,6 +1,7 @@
 package com.trip.server.database.entity;
 
 import com.trip.server.database.enumeration.PlaceType;
+import com.trip.server.model.Coordinatable;
 import com.trip.server.model.Identifiable;
 import com.trip.server.model.OsmIdentifiable;
 import lombok.AllArgsConstructor;
@@ -18,7 +19,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Accessors(chain = true)
 @Entity(name = "place")
-public class Place implements Identifiable, OsmIdentifiable {
+public class Place implements Identifiable, OsmIdentifiable, Coordinatable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

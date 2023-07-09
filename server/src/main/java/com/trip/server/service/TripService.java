@@ -26,8 +26,8 @@ public class TripService {
         return tripRepository.findByUser(user, pageable);
     }
 
-    public Long create(TripCreationModel tripCreationModel) {
-        var areCitiesMatch = tripCreationModel.getAttractions().stream()
+    public Trip create(TripCreationModel tripCreationModel) {
+        var areCitiesMatch = tripCreationModel.getPlacesToVisit().stream()
                 .allMatch(a -> a.getCity().equals(tripCreationModel.getCity()));
 
         if (!areCitiesMatch) {
@@ -41,9 +41,8 @@ public class TripService {
                 .startsAt(tripCreationModel.getStartsAt())
                 .endsAt(tripCreationModel.getEndsAt())
                 .build();
-        tripRepository.save(trip);
 
-        return trip.getId();
+        return tripRepository.save(trip);
     }
 
     public Page<Trip> getAll(Pageable pageable) {

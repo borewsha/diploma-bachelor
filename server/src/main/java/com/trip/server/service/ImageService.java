@@ -24,11 +24,12 @@ public class ImageService {
                 .orElseThrow(ImageService::getNotFoundException);
     }
 
-    public Long save(byte[] content) {
+    public Image save(byte[] content) {
         var image = Image.builder()
                 .content(content)
                 .build();
-        return imageRepository.save(image).getId();
+
+        return imageRepository.save(image);
     }
 
     public BufferedImage getBufferedImageById(Long id) {

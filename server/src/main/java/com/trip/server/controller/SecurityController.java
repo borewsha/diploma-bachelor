@@ -52,11 +52,9 @@ public class SecurityController extends ApiController {
             )
     })
     @PostMapping("/registration")
-    public ResponseEntity<CreatedDto> registration(
-            @RequestBody @Valid RegistrationDto registrationDto
-    ) {
-        var userId = userService.register(registrationDto.getEmail(), registrationDto.getPassword(), registrationDto.getFullName());
-        var userCreatedDto = new CreatedDto(userId);
+    public ResponseEntity<CreatedDto> registration(@RequestBody @Valid RegistrationDto registrationDto) {
+        var user = userService.register(registrationDto.getEmail(), registrationDto.getPassword(), registrationDto.getFullName());
+        var userCreatedDto = new CreatedDto(user.getId());
 
         return new ResponseEntity<>(userCreatedDto, HttpStatus.CREATED);
     }
@@ -79,9 +77,7 @@ public class SecurityController extends ApiController {
             )
     })
     @PostMapping("/login")
-    public ResponseEntity<JwtDto> login(
-            @Valid @RequestBody LoginDto loginDto
-    ) {
+    public ResponseEntity<JwtDto> login(@Valid @RequestBody LoginDto loginDto) {
         var jwt = userCredentialService.generateJwt(loginDto.getEmail(), loginDto.getPassword());
         var jwtDto = modelMapper.map(jwt, JwtDto.class);
         return ResponseEntity.ok(jwtDto);
@@ -105,9 +101,7 @@ public class SecurityController extends ApiController {
             )
     })
     @PostMapping("/refresh")
-    public ResponseEntity<JwtDto> updateTokens(
-            @Valid @RequestBody RefreshTokenDto refreshTokenDto
-    ) {
+    public ResponseEntity<JwtDto> refresh(@Valid @RequestBody RefreshTokenDto refreshTokenDto) {
         var jwt = refreshTokenService.updateTokens(refreshTokenDto.getRefreshToken());
         var jwtDto = modelMapper.map(jwt, JwtDto.class);
         return ResponseEntity.ok(jwtDto);

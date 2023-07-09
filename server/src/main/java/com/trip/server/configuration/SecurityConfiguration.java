@@ -56,7 +56,8 @@ public class SecurityConfiguration {
     ) {
         authorizeRequestsCustomizer
                 .antMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/registration", "/api/login", "/api/refresh").permitAll();
+                .antMatchers(HttpMethod.POST, "/api/registration", "/api/login", "/api/refresh").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/images/*").permitAll();
 
         if (securityAuthenticated) {
             authorizeRequestsCustomizer.anyRequest().authenticated();

@@ -41,7 +41,7 @@ public class PlaceController extends ApiController {
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Место успешно отдано"
+                    description = "Место найдено"
             ),
             @ApiResponse(
                     responseCode = "404",
@@ -54,7 +54,7 @@ public class PlaceController extends ApiController {
         var place = placeService.getById(id);
         var placeDto = modelMapper.map(place, PlaceDto.class);
 
-        return new ResponseEntity<>(placeDto, HttpStatus.OK);
+        return ResponseEntity.ok(placeDto);
     }
 
     @Operation(summary = "Обновить данные о месте")
@@ -98,7 +98,7 @@ public class PlaceController extends ApiController {
 
         placeService.patch(id, placePatchModel);
 
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return ResponseEntity.noContent().build();
     }
 
 }

@@ -35,6 +35,6 @@ public class TripCreationModel {
 
     private LocalDate endsAt;
 
-    private List<Place> attractions;
+    private List<Place> placesToVisit;
 
 }

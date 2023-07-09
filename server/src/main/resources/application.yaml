@@ -24,6 +24,14 @@ overpass:
   port: ${OVERPASS_PORT:8082}
   default-area-tags: ${OVERPASS_DEFAULT_AREA_TAGS:admin_level=4}
 
+osrm:
+  car:
+    host: ${OSRM_CAR_HOST:localhost}
+    port: ${OSRM_CAR_PORT:8083}
+  foot:
+    host: ${OSRM_FOOT_HOST:localhost}
+    port: ${OSRM_FOOT_PORT:8084}
+
 nominatim:
   host: ${NOMINATIM_HOST:localhost}
   port: ${NOMINATIM_PORT:8085}

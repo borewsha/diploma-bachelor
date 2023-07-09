@@ -29,6 +29,8 @@ public class User implements Identifiable {
     @Column(nullable = false)
     private ZonedDateTime registeredAt;
 
+    private String email;
+
     private String fullName;
 
 }

@@ -1,24 +1,22 @@
 package com.trip.server.database.entity;
 
-import com.trip.server.model.Coordinatable;
 import com.trip.server.model.Identifiable;
-import com.trip.server.model.OsmIdentifiable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-@Entity(name = "city")
-public class City implements Identifiable, OsmIdentifiable, Coordinatable {
+@Entity(name = "trip_place")
+public class TripPlace implements Identifiable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,18 +24,15 @@ public class City implements Identifiable, OsmIdentifiable, Coordinatable {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "image_id")
-    @Nullable
-    private Image image;
+    @JoinColumn(name = "trip_id")
+    private Trip trip;
 
-    private String osmId;
+    @ManyToOne
+    @JoinColumn(name = "place_id")
+    private Place place;
 
-    private String name;
+    private LocalDate date;
 
-    private String region;
-
-    private Double lat;
-
-    private Double lon;
+    private Integer order;
 
 }

@@ -31,6 +31,12 @@ public class UserDto implements Identifiable {
     private String registeredAt;
 
     @Schema(
+            description = "Электронная почта пользователя",
+            example = "username@mail.ru"
+    )
+    private String email;
+
+    @Schema(
             description = "Полное имя пользователя",
             example = "Иванов Иван Иванович"
     )

@@ -10,6 +10,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -42,7 +43,7 @@ public class TripMapper implements Mapper {
                             null,
                             getStartsAt(tripCreationDto.getDates()),
                             getEndsAt(tripCreationDto.getDates()),
-                            null
+                            Collections.emptyList()
                     );
                 });
     }

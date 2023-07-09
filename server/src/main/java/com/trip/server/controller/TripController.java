@@ -8,10 +8,7 @@ import com.trip.server.dto.PageDto;
 import com.trip.server.dto.PageParamsDto;
 import com.trip.server.dto.SortParamsDto;
 import com.trip.server.model.TripCreationModel;
-import com.trip.server.service.CityService;
-import com.trip.server.service.PlaceService;
-import com.trip.server.service.TripService;
-import com.trip.server.service.UserService;
+import com.trip.server.service.*;
 import com.trip.server.util.PageUtil;
 import com.trip.server.util.SortUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,6 +39,10 @@ public class TripController extends ApiController {
 
     private final TripService tripService;
 
+    private final TripPlaceService tripPlaceService;
+
+    private final OsrmService osrmService;
+
     private final UserService userService;
 
     private final CityService cityService;
@@ -71,14 +72,14 @@ public class TripController extends ApiController {
         var page = tripService.getAll(pageRequest.withSort(sortRequest));
         var pageDto = PageUtil.toDto(modelMapper, page, TripDto.class);
 
-        return new ResponseEntity<>(pageDto, HttpStatus.OK);
+        return ResponseEntity.ok(pageDto);
     }
 
     @Operation(summary = "Поиск путешествия")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "201",
-                    description = "Путешествие успешно создано"
+                    description = "Путешествие найдено"
             ),
             @ApiResponse(
                     responseCode = "403",
@@ -97,7 +98,7 @@ public class TripController extends ApiController {
         var trip = tripService.getById(id);
         var tripDto = modelMapper.map(trip, TripDto.class);
 
-        return new ResponseEntity<>(tripDto, HttpStatus.OK);
+        return ResponseEntity.ok(tripDto);
     }
 
 
@@ -130,15 +131,17 @@ public class TripController extends ApiController {
         var tripCreationModel = modelMapper.map(tripCreationDto, TripCreationModel.class)
                 .setUser(userService.getById(tripCreationDto.getUserId()))
                 .setCity(cityService.getById(tripCreationDto.getCityId()))
-                .setAttractions(placeService.getByIds(tripCreationDto.getAttractions()));
+                .setPlacesToVisit(placeService.getByIds(tripCreationDto.getAttractions()));
         Optional.ofNullable(tripCreationDto.getAccommodationId())
                 .map(placeService::getById)
                 .ifPresent(tripCreationModel::setAccommodation);
 
-        var tripId = tripService.create(tripCreationModel);
-        var tripCreatedDto = new CreatedDto(tripId);
+        var trip = tripService.create(tripCreationModel);
+        tripPlaceService.makeTripRoutes(trip, tripCreationModel);
 
-        return new ResponseEntity<>(tripCreatedDto, HttpStatus.OK);
+        var tripCreatedDto = new CreatedDto(trip.getId());
+
+        return new ResponseEntity<>(tripCreatedDto, HttpStatus.CREATED);
     }
 
 }

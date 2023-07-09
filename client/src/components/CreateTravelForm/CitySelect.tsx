@@ -23,7 +23,7 @@ const CitySelect = () => {
     const citySearch = useMemo(
         () => debounce(async (cityName: string) => {
             await dispatch(searchingCities(cityName))
-        }, 1000), [])
+        }, 500), [])
 
     useEffect(() => {
         if (selectedCity) {

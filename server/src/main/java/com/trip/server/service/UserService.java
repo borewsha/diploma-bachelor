@@ -37,7 +37,7 @@ public class UserService {
         var principal = (String) authentication.getPrincipal();
 
         if (principal.equals("anonymousUser")) {
-            throw new UnauthorizedException("Не выполнен вход");
+            throw new UnauthorizedException("Вход не выполнен");
         }
 
         return Long.parseLong(principal);
@@ -47,21 +47,22 @@ public class UserService {
         return getById(getCurrentUserId());
     }
 
-    public Long register(String username, String password, String fullName) {
-        if (userCredentialService.findByUsername(username) != null) {
+    public User register(String email, String password, String fullName) {
+        if (userCredentialService.findByUsername(email) != null) {
             throw new UnprocessableEntityException("Такое имя пользователя уже занято");
         }
 
         var roleUser = userRoleService.getById(ROLE_USER.getId());
         var user = User.builder()
                 .role(roleUser)
+                .email(email)
                 .fullName(fullName)
                 .registeredAt(ZonedDateTime.now())
                 .build();
         userRepository.save(user);
-        userCredentialService.createCredential(user, username, password);
+        userCredentialService.createCredential(user, email, password);
 
-        return user.getId();
+        return user;
     }
 
     private static NotFoundException getNotFoundException() {

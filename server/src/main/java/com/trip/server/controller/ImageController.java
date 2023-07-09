@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.*;
 import org.springframework.core.io.*;
 import org.springframework.http.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.*;
 
@@ -45,8 +46,8 @@ public class ImageController extends ApiController {
     @Operation(summary = "Загрузка фотографии")
     @ApiResponses(value = {
             @ApiResponse(
-                    responseCode = "200",
-                    description = "OK"
+                    responseCode = "201",
+                    description = "Изображение успешно загружено"
             ),
             @ApiResponse(
                     responseCode = "400",
@@ -58,15 +59,16 @@ public class ImageController extends ApiController {
                     content = @Content(schema = @Schema(implementation = ApiErrorDto.class))
             )
     })
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<CreatedDto> save(@RequestParam MultipartFile image) {
+    public ResponseEntity<CreatedDto> save(@RequestParam MultipartFile multipartFile) {
         try {
-            byte[] imageBytes = image.getBytes();
+            byte[] imageBytes = multipartFile.getBytes();
 
-            var imageId = imageService.save(imageBytes);
-            var imageCreatedDto = new CreatedDto(imageId);
+            var image = imageService.save(imageBytes);
+            var imageCreatedDto = new CreatedDto(image.getId());
 
-            return ResponseEntity.ok(imageCreatedDto);
+            return new ResponseEntity<>(imageCreatedDto, HttpStatus.CREATED);
         } catch (IOException e) {
             throw new BadRequestException("Произошла ошибка при загрузке фотографии", e);
         }

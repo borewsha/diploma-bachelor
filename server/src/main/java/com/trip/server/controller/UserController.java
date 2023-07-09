@@ -17,7 +17,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.*;
 import lombok.*;
 import org.modelmapper.*;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.*;
@@ -55,7 +54,7 @@ public class UserController extends ApiController {
         var user = userService.getCurrentUser();
         var userDto = modelMapper.map(user, UserDto.class);
 
-        return new ResponseEntity<>(userDto, HttpStatus.OK);
+        return ResponseEntity.ok(userDto);
     }
 
     @Operation(summary = "Все пользователи в системе")
@@ -81,14 +80,14 @@ public class UserController extends ApiController {
         var page = userService.getAll(pageRequest.withSort(sortRequest));
         var pageDto = PageUtil.toDto(modelMapper, page, UserDto.class);
 
-        return new ResponseEntity<>(pageDto, HttpStatus.OK);
+        return ResponseEntity.ok(pageDto);
     }
 
     @Operation(summary = "Поиск пользователя")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Данные о пользователе"
+                    description = "Пользователь найден"
             ),
             @ApiResponse(
                     responseCode = "403",
@@ -107,7 +106,7 @@ public class UserController extends ApiController {
         var user = userService.getById(id);
         var userDto = modelMapper.map(user, UserDto.class);
 
-        return new ResponseEntity<>(userDto, HttpStatus.OK);
+        return ResponseEntity.ok(userDto);
     }
 
     @Operation(summary = "Путешествия пользователя")
@@ -140,7 +139,7 @@ public class UserController extends ApiController {
         var page = tripService.getByUser(user, pageRequest.withSort(sortRequest));
         var pageDto = PageUtil.toDto(modelMapper, page, TripDto.class);
 
-        return new ResponseEntity<>(pageDto, HttpStatus.OK);
+        return ResponseEntity.ok(pageDto);
     }
 
 }

@@ -18,6 +18,7 @@ public class UserMapper implements Mapper {
                             user.getId(),
                             user.getRole().getName(),
                             TimeUtil.getFormattedZonedDateTime(user.getRegisteredAt()),
+                            user.getEmail(),
                             user.getFullName()
                     );
                 });

@@ -7,7 +7,9 @@ import com.trip.server.dto.CreatedDto;
 import com.trip.server.dto.PageDto;
 import com.trip.server.dto.PageParamsDto;
 import com.trip.server.dto.SortParamsDto;
+import com.trip.server.dto.trip.TripExtendedDto;
 import com.trip.server.model.TripCreationModel;
+import com.trip.server.model.TripExtended;
 import com.trip.server.service.*;
 import com.trip.server.util.PageUtil;
 import com.trip.server.util.SortUtil;
@@ -40,8 +42,6 @@ public class TripController extends ApiController {
     private final TripService tripService;
 
     private final TripPlaceService tripPlaceService;
-
-    private final OsrmService osrmService;
 
     private final UserService userService;
 
@@ -94,11 +94,14 @@ public class TripController extends ApiController {
     })
     @PreAuthorize("hasAuthority('ROLE_ADMIN') || @tripAccess.hasRightToView(#id)")
     @GetMapping("/{id}")
-    public ResponseEntity<TripDto> getById(@PathVariable Long id) {
+    public ResponseEntity<TripExtendedDto> getById(@PathVariable Long id) {
         var trip = tripService.getById(id);
-        var tripDto = modelMapper.map(trip, TripDto.class);
+        var tripPlaces = tripPlaceService.getByTrip(trip);
 
-        return ResponseEntity.ok(tripDto);
+        var tripExtended = tripService.getExtendedModel(trip, tripPlaces);
+        var tripExtendedDto = modelMapper.map(tripExtended, TripExtendedDto.class);
+
+        return ResponseEntity.ok(tripExtendedDto);
     }
 
 

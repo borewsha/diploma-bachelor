@@ -20,7 +20,7 @@ public class RouteStep {
     private String name;
 
     @Nullable
-    private Integer ref;
+    private Object ref;
 
     @Nullable
     private String pronunciation;

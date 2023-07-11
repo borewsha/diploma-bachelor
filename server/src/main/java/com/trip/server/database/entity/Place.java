@@ -12,6 +12,7 @@ import lombok.experimental.Accessors;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
+import java.util.function.Function;
 
 @Data
 @Builder

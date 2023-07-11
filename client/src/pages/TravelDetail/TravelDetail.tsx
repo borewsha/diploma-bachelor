@@ -7,7 +7,7 @@ import {useLocation} from 'react-router'
 import {RightCircleTwoTone} from '@ant-design/icons'
 import {Place} from 'shared/entities'
 import './TravelDetail.modules.css'
-import {selectWay} from 'slices/travelSlice'
+import {getTravel, selectWay} from 'slices/travelSlice'
 import {setCenter} from 'slices/mapSlice'
 import ru from 'antd/locale/ru_RU'
 import 'dayjs/locale/ru';
@@ -27,7 +27,7 @@ const TravelDetail = () => {
 
     useEffect(() => {
         // @ts-ignore
-        // dispatch(getTravel(pathname.split('/').at(-1)))
+        dispatch(getTravel(pathname.split('/').at(-1)))
         dispatch(setCenter([travel?.accommodation.lat, travel?.accommodation.lon]))
     }, [])
 

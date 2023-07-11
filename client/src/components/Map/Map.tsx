@@ -51,7 +51,7 @@ const Map: FC<MapProps> = ({
                             key={way.points[0][0]}
                             positions={way.points}
                             pathOptions={{
-                                color: 'red',
+                                color: 'blue',
                                 weight: i === selectedWay ? 7 : 3,
                                 opacity: 0.7,
                                 dashArray: i === selectedWay ? '' : '30 10'
@@ -63,7 +63,7 @@ const Map: FC<MapProps> = ({
                             key={way.points[0][0]}
                             positions={way.points}
                             pathOptions={{
-                                color: 'blue',
+                                color: 'red',
                                 weight: i === selectedWay ? 7 : 3,
                                 opacity: 0.7,
                                 dashArray: i === selectedWay ? '' : '30 10'

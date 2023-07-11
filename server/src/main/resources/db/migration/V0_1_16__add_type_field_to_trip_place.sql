@@ -1,0 +1,8 @@
+DELETE
+FROM trip_place;
+
+DELETE
+FROM trip;
+
+ALTER TABLE trip_place
+    ADD COLUMN type VARCHAR NOT NULL DEFAULT 'FOOT';

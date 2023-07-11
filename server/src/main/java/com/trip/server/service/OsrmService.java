@@ -18,7 +18,7 @@ public class OsrmService {
 
     private OsrmClient osrmClientFoot;
 
-    public RouteResponse getCarRoute(List<Coordinatable> coordinates) {
+    public RouteResponse getCarRoute(List<? extends Coordinatable> coordinates) {
         var waypoints = coordinates.stream()
                 .map(c -> new Waypoint(c.getLat(), c.getLon()))
                 .toList();
@@ -26,7 +26,7 @@ public class OsrmService {
         return osrmClientCar.route(waypoints);
     }
 
-    public RouteResponse getFootRoute(List<Coordinatable> coordinates) {
+    public RouteResponse getFootRoute(List<? extends Coordinatable> coordinates) {
         var waypoints = coordinates.stream()
                 .map(c -> new Waypoint(c.getLat(), c.getLon()))
                 .toList();
@@ -34,7 +34,7 @@ public class OsrmService {
         return osrmClientFoot.route(waypoints);
     }
 
-    public TableResponse getCarTable(List<Coordinatable> coordinates) {
+    public TableResponse getCarTable(List<? extends Coordinatable> coordinates) {
         var waypoints = coordinates.stream()
                 .map(c -> new Waypoint(c.getLat(), c.getLon()))
                 .toList();
@@ -42,7 +42,7 @@ public class OsrmService {
         return osrmClientCar.table(waypoints);
     }
 
-    public TableResponse getFootTable(List<Coordinatable> coordinates) {
+    public TableResponse getFootTable(List<? extends Coordinatable> coordinates) {
         var waypoints = coordinates.stream()
                 .map(c -> new Waypoint(c.getLat(), c.getLon()))
                 .toList();

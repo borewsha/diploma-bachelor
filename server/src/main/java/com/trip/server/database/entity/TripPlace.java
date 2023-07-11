@@ -1,5 +1,6 @@
 package com.trip.server.database.entity;
 
+import com.trip.server.database.enumeration.RouteType;
 import com.trip.server.model.Identifiable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,6 +34,10 @@ public class TripPlace implements Identifiable {
 
     private LocalDate date;
 
+    @Column(name = "\"order\"")
     private Integer order;
+
+    @Enumerated(EnumType.STRING)
+    private RouteType type;
 
 }

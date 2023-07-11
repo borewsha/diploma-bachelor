@@ -171,7 +171,7 @@ const TravelDetail = () => {
                     <Map
                         style={{width: '100%', height: '100%', position: 'relative'}}
                         center={center}
-                        zoom={zoom < 10 ? 15 : zoom}
+                        zoom={14}
                         accommodation={travel?.accommodation}
                         places={way?.places}
                         routePoints={way?.ways}

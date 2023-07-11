@@ -34,7 +34,7 @@ public class TripPlaceService {
 
     private static final Double HOUR = 3600.0;
 
-    private static final Double DESIRED_SPENT_TIME = HOUR * 6;
+    private static final Double DESIRED_SPENT_TIME = HOUR * 4;
 
     private static final Map<PlaceType, Double> PLACE_TYPE_DURATION = Map.of(
             PlaceType.ATTRACTION, HOUR,
@@ -154,6 +154,15 @@ public class TripPlaceService {
 
                     groups.add(currentGroup);
                     currentGroup = PlaceGroup.empty();
+
+                    source = trip.getAccommodation();
+                    routeToPlace = new Route(
+                            source,
+                            place,
+                            PLACE_TYPE_DURATION.get(place.getType()),
+                            routeMatrix.get(source).get(place)
+                    );
+                    spentTime = routeToPlace.getSpentTime() + routeToAccommodation.getSpentTime();
                 }
 
                 if (currentGroup.getSpentTime() + spentTime <= DESIRED_SPENT_TIME) {

@@ -1,5 +1,6 @@
 package com.trip.server.osrm.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.springframework.lang.Nullable;
@@ -25,7 +26,7 @@ public class RouteStep {
     @Nullable
     private String pronunciation;
 
-    @Nullable
+    @JsonIgnore
     private List<Object> destinations;
 
     @Nullable

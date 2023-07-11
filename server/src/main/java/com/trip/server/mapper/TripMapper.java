@@ -72,7 +72,7 @@ public class TripMapper implements Mapper {
                     var day = mappingContext.getSource();
 
                     return new DayDto(
-                            TimeUtil.getFormattedLocalDate(day.getDate()),
+                            TimeUtil.getFormattedLocalDate(day.getDate().plusDays(1)),
                             day.getPlaces().stream()
                                     .map(p -> modelMapper.map(p, PlaceDto.class))
                                     .toList(),
@@ -113,6 +113,7 @@ public class TripMapper implements Mapper {
 
     public static List<String> getDates(LocalDate startsAt, LocalDate endsAt) {
         return Stream.of(startsAt, endsAt)
+                .map(d -> d.plusDays(1))
                 .map(TimeUtil::getFormattedLocalDate)
                 .toList();
     }
